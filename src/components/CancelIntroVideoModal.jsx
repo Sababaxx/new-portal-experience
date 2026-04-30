@@ -32,12 +32,17 @@ export default function CancelIntroVideoModal({ open, onClose, onContinue, onSki
 
   useEffect(() => {
     if (!open || !videoRef.current) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const video = videoRef.current;
     video.muted = false;
     video.volume = 1;
     video.currentTime = 0;
     const playAttempt = video.play();
     if (playAttempt?.catch) playAttempt.catch(() => {});
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
   }, [open]);
 
   if (!open) return null;

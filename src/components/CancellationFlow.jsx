@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Button from "./Button.jsx";
 
 const reasons = [
@@ -323,6 +323,15 @@ export default function CancellationFlow({ open, onClose, onKept }) {
     () => reasons.find((reason) => reason.id === selectedReasonId),
     [selectedReasonId]
   );
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
 
   if (!open) return null;
 
