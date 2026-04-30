@@ -14,7 +14,8 @@ function SubscriptionListPage({ activeView = "home", onNavigate, onOpen, onAddNe
           <section className="home-card" aria-label="Account overview">
             <div className="home-topline">
               <div className="member-greeting">
-                <h1>Hello, Saba <span>logged in as buy@omnicreatine.com</span></h1>
+                <h1>Hello, Saba</h1>
+                <span>Logged in as buy@omnicreatine.com</span>
                 <p>Thank you for being a member since January 2026!</p>
               </div>
               <div className="home-quick-actions" aria-label="Home quick actions">

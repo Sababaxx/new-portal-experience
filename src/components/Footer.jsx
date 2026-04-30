@@ -11,7 +11,7 @@ export default function Footer() {
     <footer className="omni-footer">
       <div className="footer-grid">
         <div className="footer-newsletter">
-          <h4>Sign up for up to 47% off</h4>
+          <h4>Sign up for up to 47% Off</h4>
           <input type="email" placeholder="Email address" />
           <button>JOIN NOW</button>
           <p>*By joining, you'll receive our wellness insights and can unsubscribe anytime.</p>

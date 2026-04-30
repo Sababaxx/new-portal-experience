@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 const navItems = [
   { id: "home", label: "Home" },
@@ -9,11 +9,21 @@ const navItems = [
 ];
 
 export default function PortalNav({ activeView, onNavigate, onLogout }) {
+  const itemRefs = useRef({});
+
+  useEffect(() => {
+    const activeItem = itemRefs.current[activeView];
+    activeItem?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [activeView]);
+
   return (
     <aside className="portal-side-nav" aria-label="Portal navigation">
       {navItems.map((item) => (
         <a
           key={item.id}
+          ref={(node) => {
+            itemRefs.current[item.id] = node;
+          }}
           className={activeView === item.id ? "active" : ""}
           href="#"
           onClick={(event) => {
