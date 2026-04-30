@@ -496,6 +496,14 @@ button { font-family: inherit; cursor: pointer; }
   margin-bottom: 20px;
 }
 
+.cancel-step-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-bottom: 14px;
+}
+
 .cancel-kicker,
 .cancel-selected-label {
   display: inline-flex;
@@ -605,8 +613,8 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .cancel-back-link {
-  margin-bottom: 18px;
   padding: 0;
+  flex: 0 0 auto;
 }
 
 .cancel-save-step,
@@ -876,6 +884,7 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 14px;
   background: #071b39;
   object-fit: cover;
+  object-position: center 44%;
   margin-bottom: 16px;
 }
 
@@ -2138,5 +2147,352 @@ button { font-family: inherit; cursor: pointer; }
     flex-wrap: wrap;
     justify-content: flex-start;
     max-width: none;
+  }
+}
+
+/* Mobile prototype polish: preserve desktop, make the portal usable below tablet width. */
+@media (max-width: 980px) {
+  .portal-layout,
+  .detail-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 760px;
+  }
+
+  .portal-side-nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 0;
+  }
+
+  .portal-side-nav a {
+    border: 1px solid rgba(7, 58, 122, .24);
+    border-radius: 999px;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, .52);
+    text-decoration: none;
+  }
+
+  .portal-side-nav a.active {
+    margin-left: 0;
+    padding: 7px 10px;
+    background: #ffffff;
+    border-color: var(--omni-primary);
+  }
+
+  .detail-layout .portal-main {
+    max-width: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .omni-header-inner {
+    height: 52px;
+    padding: 10px 14px;
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .header-shop {
+    font-size: 10px;
+  }
+
+  .header-logo img {
+    width: 78px;
+    height: 26px;
+  }
+
+  .header-icons {
+    gap: 10px;
+  }
+
+  .portal-shell,
+  .portal-shell-dashboard {
+    padding: 14px 10px 30px;
+  }
+
+  .home-card,
+  .manage-offers-card,
+  .portal-page-panel {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .home-topline {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .home-quick-actions,
+  .manage-action-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 8px;
+  }
+
+  .home-quick-actions .btn,
+  .manage-action-row .btn,
+  .more-menu-wrap {
+    width: 100%;
+  }
+
+  .more-menu-wrap {
+    display: block;
+  }
+
+  .more-menu {
+    left: 0;
+    right: auto;
+    width: min(220px, 100vw - 28px);
+  }
+
+  .manage-hero {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .manage-title-area .back-btn {
+    margin-bottom: 12px;
+  }
+
+  .manage-title-area h1 {
+    font-size: 34px;
+  }
+
+  .manage-title-area p {
+    font-size: 19px;
+  }
+
+  .detail-layout .manage-offers-card .portal-offer-hero,
+  .detail-layout .manage-offers-card .portal-offer-campaign {
+    border-radius: 10px;
+  }
+
+  .portal-offer-stack {
+    gap: 12px;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 20px;
+  }
+
+  .workspace-card {
+    padding: 12px;
+    border-radius: 9px;
+  }
+
+  .current-product-row {
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  .workspace-product-image {
+    width: 82px;
+    height: 82px;
+    min-height: 82px;
+  }
+
+  .workspace-product-head {
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .workspace-product-actions {
+    display: grid;
+    grid-template-columns: 38px 28px 38px;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .workspace-product-actions select,
+  .workspace-product-actions .swap-mini {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .info-workspace-card,
+  .billing-row,
+  .rec-bottom {
+    align-items: flex-start;
+  }
+
+  .info-workspace-card,
+  .billing-row {
+    flex-direction: column;
+  }
+
+  .billing-meta {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .rec-product {
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .rec-image {
+    width: 78px;
+    height: 78px;
+    min-height: 78px;
+  }
+
+  .promo-row {
+    grid-template-columns: 1fr;
+  }
+
+  .promo-row button {
+    justify-self: end;
+  }
+
+  .footer-grid,
+  .footer-bottom {
+    max-width: 100%;
+  }
+
+  .footer-newsletter input {
+    max-width: none;
+  }
+
+  .footer-mega {
+    max-width: 100%;
+    height: 168px;
+    margin-top: 24px;
+  }
+
+  .footer-mega img {
+    height: 168px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 540px) {
+  .page-title,
+  .portal-page-head h1 {
+    font-size: 28px;
+  }
+
+  .portal-side-nav {
+    gap: 6px;
+  }
+
+  .portal-side-nav a {
+    font-size: 11px;
+    padding: 7px 9px;
+  }
+
+  .home-quick-actions,
+  .manage-action-row {
+    grid-template-columns: 1fr;
+  }
+
+  .manage-title-area h1 {
+    font-size: 30px;
+  }
+
+  .manage-title-area p {
+    font-size: 17px;
+  }
+
+  .current-product-row,
+  .rec-product {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-product-image,
+  .rec-image {
+    width: 96px;
+    height: 96px;
+    min-height: 96px;
+  }
+
+  .workspace-product-actions {
+    grid-template-columns: 44px 1fr 44px;
+  }
+
+  .workspace-product-actions span {
+    justify-self: center;
+  }
+
+  .cancel-intro-backdrop,
+  .cancel-flow-backdrop {
+    padding: 10px;
+    align-items: start;
+  }
+
+  .cancel-intro-modal,
+  .cancel-flow-panel {
+    max-height: calc(100vh - 20px);
+    width: 100%;
+    margin: 0;
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .cancel-intro-copy h2,
+  .cancel-step h2 {
+    font-size: 24px;
+    letter-spacing: -0.02em;
+  }
+
+  .cancel-intro-video {
+    aspect-ratio: 16 / 10;
+  }
+
+  .cancel-intro-plan {
+    grid-template-columns: 52px 1fr;
+    gap: 10px;
+  }
+
+  .cancel-intro-plan > strong {
+    grid-column: 2;
+  }
+
+  .cancel-intro-actions,
+  .cancel-flow-actions,
+  .cancel-save-grid,
+  .cancel-branch-card,
+  .cancel-reason-list {
+    grid-template-columns: 1fr;
+  }
+
+  .cancel-flow-actions {
+    display: grid;
+  }
+
+  .cancel-save-grid button:last-child:nth-child(3) {
+    grid-column: auto;
+  }
+
+  .portal-toast {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    text-align: center;
+  }
+
+  .omni-footer {
+    padding: 28px 16px 18px;
+  }
+
+  .footer-mega {
+    height: 132px;
+  }
+
+  .footer-mega img {
+    height: 132px;
   }
 }

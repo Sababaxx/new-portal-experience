@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Button from "./Button.jsx";
 import { subscription } from "../data/subscription.js";
 
@@ -7,11 +7,43 @@ const founderVideoSrc = "/assets/omni-founder-message.mp4";
 
 export default function CancelIntroVideoModal({ open, onClose, onContinue, onSkipNextOrder }) {
   const [selectedSkip, setSelectedSkip] = useState(skipOptions[0]);
+  const videoRef = useRef(null);
+
+  const stopVideo = () => {
+    if (!videoRef.current) return;
+    videoRef.current.pause();
+    videoRef.current.currentTime = 0;
+  };
+
+  const closeAndStop = () => {
+    stopVideo();
+    onClose();
+  };
+
+  const continueAndStop = () => {
+    stopVideo();
+    onContinue();
+  };
+
+  const skipAndStop = () => {
+    stopVideo();
+    onSkipNextOrder(selectedSkip);
+  };
+
+  useEffect(() => {
+    if (!open || !videoRef.current) return;
+    const video = videoRef.current;
+    video.muted = false;
+    video.volume = 1;
+    video.currentTime = 0;
+    const playAttempt = video.play();
+    if (playAttempt?.catch) playAttempt.catch(() => {});
+  }, [open]);
 
   if (!open) return null;
 
   return (
-    <div className="cancel-intro-backdrop" role="presentation" onClick={onClose}>
+    <div className="cancel-intro-backdrop" role="presentation" onClick={closeAndStop}>
       <section
         className="cancel-intro-modal"
         role="dialog"
@@ -19,7 +51,7 @@ export default function CancelIntroVideoModal({ open, onClose, onContinue, onSki
         aria-labelledby="cancel-intro-title"
         onClick={(event) => event.stopPropagation()}
       >
-        <button className="cancel-intro-close" type="button" aria-label="Close" onClick={onClose}>×</button>
+        <button className="cancel-intro-close" type="button" aria-label="Close" onClick={closeAndStop}>×</button>
 
         <div className="cancel-intro-copy">
           <span>Before you cancel</span>
@@ -37,11 +69,19 @@ export default function CancelIntroVideoModal({ open, onClose, onContinue, onSki
         </div>
 
         <video
+          ref={videoRef}
           className="cancel-intro-video"
+          autoPlay
           controls
           playsInline
           preload="metadata"
           poster="/assets/omni-product-peach.png"
+          onLoadedMetadata={() => {
+            if (!videoRef.current) return;
+            videoRef.current.muted = false;
+            videoRef.current.volume = 1;
+            videoRef.current.play().catch(() => {});
+          }}
         >
           <source src={founderVideoSrc} type="video/mp4" />
         </video>
@@ -62,8 +102,8 @@ export default function CancelIntroVideoModal({ open, onClose, onContinue, onSki
         </div>
 
         <div className="cancel-intro-actions">
-          <Button variant="outline" onClick={onContinue}>Continue to cancellation</Button>
-          <Button variant="primary" onClick={() => onSkipNextOrder(selectedSkip)}>Skip next order</Button>
+          <Button variant="outline" onClick={continueAndStop}>Continue to cancellation</Button>
+          <Button variant="primary" onClick={skipAndStop}>Skip next order</Button>
         </div>
       </section>
     </div>

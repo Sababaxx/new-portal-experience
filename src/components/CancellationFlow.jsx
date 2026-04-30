@@ -185,8 +185,10 @@ function CancellationSaveScreen({ reason, onBack, onAction, onCancel }) {
 
   return (
     <div className="cancel-step cancel-save-step">
-      <button type="button" className="cancel-back-link" onClick={onBack}>Back to reasons</button>
-      <span className="cancel-selected-label">{reason.title}</span>
+      <div className="cancel-step-meta">
+        <button type="button" className="cancel-back-link" onClick={onBack}>Back to reasons</button>
+        <span className="cancel-selected-label">{reason.title}</span>
+      </div>
       <h2>{reason.headline}</h2>
       <p>{reason.body}</p>
 
@@ -250,8 +252,10 @@ function CancellationBranchScreen({ branch, reason, onBack, onDone, onCancel }) 
 
   return (
     <div className="cancel-step">
-      <button type="button" className="cancel-back-link" onClick={onBack}>Back to offer</button>
-      <span className="cancel-selected-label">{reason.title}</span>
+      <div className="cancel-step-meta">
+        <button type="button" className="cancel-back-link" onClick={onBack}>Back to offer</button>
+        <span className="cancel-selected-label">{reason.title}</span>
+      </div>
       <h2>{branchConfig.title}</h2>
       <p>{branchConfig.body}</p>
 
@@ -279,8 +283,10 @@ function CancellationBranchScreen({ branch, reason, onBack, onDone, onCancel }) 
 function CancellationConfirmScreen({ reason, onBack, onKeep, onConfirm }) {
   return (
     <div className="cancel-step cancel-confirm-step">
-      <button type="button" className="cancel-back-link" onClick={onBack}>Back to offer</button>
-      <span className="cancel-kicker">Final confirmation</span>
+      <div className="cancel-step-meta">
+        <button type="button" className="cancel-back-link" onClick={onBack}>Back to offer</button>
+        <span className="cancel-kicker">Final confirmation</span>
+      </div>
       <h2>Before you cancel</h2>
 
       <div className="cancel-confirm-card">
