@@ -92,7 +92,7 @@ export default function ProductWorkspace({ compact = false }) {
         <h2 className="workspace-title">Shipping information</h2>
         <div className="workspace-card info-workspace-card">
           <div>
-            <h3>Debbie Wickersham</h3>
+            <h3>Saba Bakhtadze</h3>
             <p>595 North Main street<br />Hiawassee, Georgia 30546<br />United States</p>
           </div>
           <button type="button">Edit</button>
@@ -102,7 +102,7 @@ export default function ProductWorkspace({ compact = false }) {
         <div className="workspace-card billing-workspace-card">
           <div className="billing-row">
             <div>
-              <h3>Debbie W</h3>
+              <h3>Saba B</h3>
               <p><span className="mastercard-dot red" /><span className="mastercard-dot orange" />•••• 6047</p>
             </div>
             <div className="billing-meta"><button type="button">Edit</button><span>11/26</span></div>

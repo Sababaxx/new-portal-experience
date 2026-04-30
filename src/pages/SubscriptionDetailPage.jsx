@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ActionModal from "../components/ActionModal.jsx";
 import Button from "../components/Button.jsx";
+import CancelIntroVideoModal from "../components/CancelIntroVideoModal.jsx";
+import CancellationFlow from "../components/CancellationFlow.jsx";
 import PortalNav from "../components/PortalNav.jsx";
 import PortalOfferStack from "../components/PortalOfferStack.jsx";
 import ProductWorkspace from "../components/ProductWorkspace.jsx";
@@ -11,10 +13,28 @@ export default function SubscriptionDetailPage({ activeView = "manage", onNaviga
   const sub = subscription;
   const [modal, setModal] = useState(null);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [isCancelIntroOpen, setIsCancelIntroOpen] = useState(false);
+  const [isCancellationOpen, setIsCancellationOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const openModal = (title) => {
     setMoreOpen(false);
     setModal(title);
+  };
+
+  const openCancelIntro = () => {
+    setMoreOpen(false);
+    setIsCancelIntroOpen(true);
+  };
+
+  const continueToCancellationFlow = () => {
+    setIsCancelIntroOpen(false);
+    setIsCancellationOpen(true);
+  };
+
+  const showToast = (message) => {
+    setToastMessage(message);
+    window.setTimeout(() => setToastMessage(""), 2600);
   };
 
   return (
@@ -41,7 +61,7 @@ export default function SubscriptionDetailPage({ activeView = "manage", onNaviga
                 {moreOpen && (
                   <div className="more-menu">
                     <button type="button" onClick={() => openModal("Pause subscription")}>Pause subscription</button>
-                    <button type="button" onClick={() => openModal("Cancel subscription")}>Cancel subscription</button>
+                    <button type="button" onClick={openCancelIntro}>Cancel subscription</button>
                     <button type="button" onClick={() => openModal("Manage payment")}>Manage payment</button>
                   </div>
                 )}
@@ -73,10 +93,24 @@ export default function SubscriptionDetailPage({ activeView = "manage", onNaviga
               <div className="modal-option-row"><button type="button">2 weeks</button><button type="button">4 weeks</button><button type="button">8 weeks</button></div>
             </>
           )}
-          {modal === "Cancel subscription" && <p>This would start the cancellation flow, collect a reason, and confirm before changing the active OMNI subscription.</p>}
           {modal === "Manage payment" && <p>Update the saved payment method for future OMNI orders. No card changes are made in this prototype.</p>}
         </ActionModal>
       )}
+      <CancelIntroVideoModal
+        open={isCancelIntroOpen}
+        onClose={() => setIsCancelIntroOpen(false)}
+        onContinue={continueToCancellationFlow}
+        onSkipNextOrder={(choice) => {
+          setIsCancelIntroOpen(false);
+          showToast(`${choice} selected. Next order stays controlled in this prototype.`);
+        }}
+      />
+      <CancellationFlow
+        open={isCancellationOpen}
+        onClose={() => setIsCancellationOpen(false)}
+        onKept={() => showToast("Subscription kept active.")}
+      />
+      {toastMessage && <div className="portal-toast" role="status">{toastMessage}</div>}
     </div>
   );
 }
