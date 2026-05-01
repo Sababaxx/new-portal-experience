@@ -3,21 +3,24 @@
    white cards with sharp blue borders, centered narrow layout. */
 
 :root {
-  --omni-bg: #e4edf7;
+  --omni-bg: #e2e8f0;
   --omni-card: #ffffff;
-  --omni-card-border: #143f76;
-  --omni-text: #071b39;
-  --omni-text-2: #44536d;
-  --omni-text-3: #748197;
-  --omni-muted: #8793a8;
-  --omni-primary: #073a7a;
-  --omni-primary-hover: #062f63;
+  --omni-card-border: #193b68;
+  --omni-text: #0d1e39;
+  --omni-text-2: #334155;
+  --omni-text-3: #64748b;
+  --omni-muted: #94a3b8;
+  --omni-primary: #002266;
+  --omni-primary-hover: #001a4d;
   --omni-active-green: #1f9d55;
-  --omni-strike: #9ba2bd;
-  --omni-divider: #d6e1ee;
+  --omni-strike: #94a3b8;
+  --omni-divider: #cbd5e1;
   --omni-radius: 4px;
   --omni-radius-sm: 3px;
-  --omni-footer-bg: #f7f9fc;
+  --omni-footer-bg: #f8fafc;
+  --omni-blue-soft: #6c93c2;
+  --omni-blue-mid: #265392;
+  --omni-surface: #f1f5f9;
 }
 
 * { box-sizing: border-box; }
@@ -1218,37 +1221,132 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--omni-text);
 }
 
-.referral-hero-card {
-  margin-bottom: 14px;
-  background: linear-gradient(180deg, #ffffff 0%, #eef3ff 100%);
+.referral-program-page {
+  min-height: min(760px, calc(100vh - 96px));
+  padding: clamp(38px, 6vw, 72px) 24px 54px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
-.referral-code-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 16px;
+.referral-program-head {
+  max-width: 980px;
+  margin: 0 auto clamp(82px, 10vw, 140px);
+  text-align: center;
 }
 
-.referral-code-card label {
+.referral-program-head h1 {
+  margin: 0;
+  color: var(--omni-text);
+  font-size: clamp(56px, 5.3vw, 92px);
+  line-height: .95;
+  letter-spacing: -.045em;
+  font-weight: 500;
+}
+
+.referral-program-head p {
+  max-width: 720px;
+  margin: 30px auto 0;
+  color: var(--omni-text);
+  font-size: clamp(20px, 1.55vw, 28px);
+  line-height: 1.55;
+  font-weight: 450;
+}
+
+.referral-program-form {
+  width: min(100%, 820px);
+  margin: 0 auto;
+}
+
+.referral-program-form label {
   display: block;
+  margin-bottom: 16px;
+  color: var(--omni-text);
+  font-size: 21px;
+  line-height: 1.2;
+  font-weight: 500;
 }
 
-.referral-code-card input {
+.referral-program-form sup {
+  color: #d33a2c;
+  font-size: .8em;
+  line-height: 0;
+}
+
+.referral-program-form input {
   width: 100%;
-  height: 42px;
-  border: 1.5px solid var(--omni-card-border);
-  border-radius: 7px;
-  padding: 0 14px;
+  height: 54px;
+  margin-top: 8px;
+  padding: 0 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
   color: var(--omni-text);
   font: inherit;
-  font-weight: 800;
+  font-size: 18px;
+  outline: none;
+}
+
+.referral-program-form input:focus {
+  border-color: var(--omni-blue-mid);
+  box-shadow: 0 0 0 3px rgba(38, 83, 146, .14);
+}
+
+.referral-phone-field {
+  display: flex;
+  align-items: center;
+  height: 54px;
+  margin-top: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
   background: #ffffff;
 }
 
-.referral-actions {
-  display: flex;
-  gap: 8px;
+.referral-phone-field > span {
+  flex: 0 0 auto;
+  padding: 0 14px;
+  color: var(--omni-text-2);
+  font-size: 19px;
+}
+
+.referral-phone-field input {
+  height: 100%;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+}
+
+.referral-program-form > button[type="submit"] {
+  width: 100%;
+  height: 56px;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--omni-primary);
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.referral-login-link {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  border: 0;
+  background: transparent;
+  color: var(--omni-text);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.referral-policy-note {
+  max-width: 760px;
+  margin: clamp(92px, 12vw, 154px) auto 0;
+  color: var(--omni-text);
+  text-align: center;
+  font-size: clamp(20px, 1.55vw, 27px);
+  line-height: 1.7;
+  font-weight: 450;
 }
 
 .account-detail-grid {
@@ -2030,14 +2128,59 @@ button { font-family: inherit; cursor: pointer; }
     font-size: 28px;
   }
   .order-history-card,
-  .referral-code-card,
   .account-detail-grid {
     grid-template-columns: 1fr;
   }
-  .referral-actions,
   .account-detail-card {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .referral-program-page {
+    min-height: auto;
+    padding: 26px 6px 34px;
+  }
+
+  .referral-program-head {
+    margin-bottom: 44px;
+  }
+
+  .referral-program-head h1 {
+    font-size: clamp(42px, 12vw, 58px);
+    line-height: .98;
+    letter-spacing: -.05em;
+  }
+
+  .referral-program-head p {
+    margin-top: 20px;
+    font-size: 17px;
+    line-height: 1.5;
+  }
+
+  .referral-program-form label {
+    margin-bottom: 14px;
+    font-size: 16px;
+  }
+
+  .referral-program-form input,
+  .referral-phone-field {
+    height: 48px;
+    font-size: 16px;
+  }
+
+  .referral-program-form > button[type="submit"] {
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .referral-login-link {
+    font-size: 15px;
+  }
+
+  .referral-policy-note {
+    margin-top: 64px;
+    font-size: 17px;
+    line-height: 1.6;
   }
 }
 
