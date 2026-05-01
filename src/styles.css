@@ -2610,18 +2610,7 @@ button { font-family: inherit; cursor: pointer; }
   }
 
   .footer-socials {
-    order: -1;
-    gap: 26px;
-  }
-
-  .footer-socials a {
-    color: var(--omni-primary);
-    font-size: 0;
-  }
-
-  .footer-socials a::first-letter {
-    font-size: 20px;
-    font-weight: 800;
+    display: none;
   }
 
   .footer-bottom .right-links {
@@ -2796,13 +2785,14 @@ button { font-family: inherit; cursor: pointer; }
   .portal-offer-panel-home .portal-offer-block,
   .portal-offer-panel-home .portal-offer-block:first-child {
     grid-column: auto;
-    min-height: 150px;
-    aspect-ratio: 16 / 9 !important;
+    min-height: 0;
+    aspect-ratio: auto !important;
   }
 
   .portal-offer-panel-home .portal-offer-image {
-    height: 100% !important;
-    object-fit: cover !important;
+    height: auto !important;
+    object-fit: contain !important;
+    object-position: center center !important;
   }
 
   .account-summary-strip {
@@ -2943,5 +2933,46 @@ button { font-family: inherit; cursor: pointer; }
   .cancel-flow-actions .btn {
     width: 100%;
     min-height: 44px;
+  }
+}
+
+@media (max-width: 760px) {
+  .portal-offer-block.animated {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 540px) {
+  .portal-offer-panel-home .portal-offer-stack,
+  .detail-layout .manage-offers-card .portal-offer-stack {
+    gap: 14px;
+  }
+
+  .portal-offer-panel-home .portal-offer-block,
+  .portal-offer-panel-home .portal-offer-block:first-child,
+  .detail-layout .manage-offers-card .portal-offer-hero,
+  .detail-layout .manage-offers-card .portal-offer-campaign {
+    min-height: 0 !important;
+    aspect-ratio: auto !important;
+  }
+
+  .portal-offer-panel-home .portal-offer-media,
+  .detail-layout .manage-offers-card .portal-offer-media {
+    height: auto !important;
+  }
+
+  .portal-offer-panel-home .portal-offer-image,
+  .detail-layout .manage-offers-card .portal-offer-image,
+  .detail-layout .manage-offers-card .portal-offer-hero .portal-offer-image,
+  .detail-layout .manage-offers-card .portal-offer-campaign .portal-offer-image {
+    height: auto !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+  }
+
+  .detail-layout .manage-offers-card .portal-offer-campaign {
+    padding: 0 !important;
   }
 }
