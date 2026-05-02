@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Button from "./Button.jsx";
 
+const SUPPORT_URL = "https://contact.gorgias.help/en-US/forms/0c4rzba9";
+
 const reasonConfig = [
   {
     id: "no-results",
@@ -13,6 +15,12 @@ const reasonConfig = [
       { label: "Get my personalized plan", branch: "plan" },
       { label: "Skip next order", branch: "skip" },
     ],
+    plan: {
+      title: "Your consistency plan",
+      body: "Stay on a smaller, easier routine long enough to judge results.",
+      options: ["Take with breakfast", "Use 3 gummies daily", "Check progress at week 8"],
+      cta: "Save my plan",
+    },
     reminder: "A personalized plan may help you get more from the product before leaving.",
   },
   {
@@ -27,6 +35,12 @@ const reasonConfig = [
       { label: "Update delivery frequency", branch: "cadence" },
       { label: "Skip next order", branch: "skip" },
     ],
+    plan: {
+      title: "Your habit plan",
+      body: "Tie OMNI to something you already do every day.",
+      options: ["Morning reminder", "Keep pouch visible", "Pair with coffee or breakfast"],
+      cta: "Save habit plan",
+    },
     reminder: "A habit plan can make the routine easier before you cancel.",
   },
   {
@@ -37,7 +51,11 @@ const reasonConfig = [
     headline: "Keep access and use what you have",
     body: "If you already have enough product, you can skip your next order and keep member access for later.",
     offer: "Keep your subscription active and your next order can stay eligible for member savings.",
-    ctas: [{ label: "Skip next order", branch: "skip" }],
+    ctas: [
+      { label: "Skip next order", branch: "skip" },
+      { label: "Move to 8 weeks", branch: "cadence" },
+      { label: "Pause subscription", branch: "pause" },
+    ],
     reminder: "Skipping gives you time to use your current supply without ending the account.",
   },
   {
@@ -49,6 +67,7 @@ const reasonConfig = [
     body: "You can lower the next few orders instead of losing subscription pricing and portal control.",
     ctas: [
       { label: "Apply 50 percent off next 3 orders", branch: "savings" },
+      { label: "Move to 8 weeks", branch: "cadence" },
       { label: "Skip next order", branch: "skip" },
     ],
     reminder: "The stronger offer can reduce the cost while keeping your routine active.",
@@ -64,6 +83,12 @@ const reasonConfig = [
       { label: "Swap product", branch: "product" },
       { label: "Get my personalized plan", branch: "plan" },
     ],
+    plan: {
+      title: "Your product-fit plan",
+      body: "Move away from the current texture and keep the routine simple.",
+      options: ["Try electrolyte stick packs", "Keep gummies paused", "Review fit after 2 weeks"],
+      cta: "Save product plan",
+    },
     reminder: "A product swap may solve the fit issue without canceling.",
   },
   {
@@ -80,6 +105,20 @@ const reasonConfig = [
     reminder: "Skipping or pausing keeps control without another immediate shipment.",
   },
   {
+    id: "no-longer-need",
+    title: "I no longer need it",
+    helper: "Pause or slow delivery in case your routine changes later.",
+    treatment: "control",
+    headline: "Keep the option open",
+    body: "If you do not need OMNI right now, you can pause, skip, or slow deliveries instead of closing the account.",
+    ctas: [
+      { label: "Pause subscription", branch: "pause" },
+      { label: "Skip next order", branch: "skip" },
+      { label: "Move to 12 weeks", branch: "cadence" },
+    ],
+    reminder: "Pausing keeps your setup ready if you want OMNI again later.",
+  },
+  {
     id: "digestion",
     title: "Not agreeing with my digestion",
     helper: "Adjust the routine and delivery timing first.",
@@ -89,7 +128,7 @@ const reasonConfig = [
     ctas: [
       { label: "Update delivery frequency", branch: "cadence" },
       { label: "Skip next order", branch: "skip" },
-      { label: "Contact support", branch: "support" },
+      { label: "Contact support", action: "support" },
     ],
     reminder: "A slower routine or support check may help you decide with more confidence.",
   },
@@ -109,8 +148,30 @@ const reasonConfig = [
       "Taste, smell, or texture seems off",
       "Other product issue",
     ],
-    ctas: [{ label: "Contact support", branch: "support" }],
+    ctas: [{ label: "Contact support", action: "support" }],
     reminder: "Support can review the product issue before final cancellation.",
+  },
+  {
+    id: "packaging-issue",
+    title: "Packaging issue with my order",
+    helper: "Tell us what happened so support can fix it.",
+    treatment: "issue",
+    headline: "What happened with the packaging?",
+    body: "Share the packaging issue first so support can route it to replacement or account help.",
+    issueFields: true,
+    issueOptions: [
+      "Pouch arrived damaged",
+      "Seal was open",
+      "Box was damaged",
+      "Items were missing",
+      "Label or address issue",
+      "Other packaging issue",
+    ],
+    ctas: [
+      { label: "Contact support", action: "support" },
+      { label: "Pause subscription", branch: "pause" },
+    ],
+    reminder: "Support can review packaging problems before you cancel.",
   },
   {
     id: "fast",
@@ -137,6 +198,12 @@ const reasonConfig = [
       { label: "Learn more", branch: "education" },
       { label: "Get my personalized plan", branch: "plan" },
     ],
+    plan: {
+      title: "Your better setup",
+      body: "Keep OMNI only where it fits your current routine.",
+      options: ["Move to 8 weeks", "Add electrolyte sticks", "Keep member pricing active"],
+      cta: "Save better setup",
+    },
     reminder: "A quick comparison may help before you give up member benefits.",
   },
   {
@@ -148,7 +215,7 @@ const reasonConfig = [
     body: "Electrolyte stick packs are sugar free and support the same daily creatine habit with added hydration support.",
     ctas: [
       { label: "Swap product", branch: "product" },
-      { label: "Contact support", branch: "support" },
+      { label: "Contact support", action: "support" },
     ],
     reminder: "A product swap may be a better fit than cancelling the full subscription.",
   },
@@ -175,7 +242,7 @@ const reasonConfig = [
     body: "Leave a short note or choose a flexible option before you make the final decision.",
     noteField: true,
     ctas: [
-      { label: "Contact support", branch: "support" },
+      { label: "Contact support", action: "support" },
       { label: "Pause subscription", branch: "pause" },
       { label: "Skip next order", branch: "skip" },
     ],
@@ -183,7 +250,7 @@ const reasonConfig = [
   },
 ];
 
-const branchConfig = {
+const defaultBranchConfig = {
   plan: {
     title: "Personalize your OMNI plan",
     body: "Pick the routine support that best matches your day.",
@@ -233,6 +300,15 @@ const branchConfig = {
     cta: "Learn more",
   },
 };
+
+function getBranchConfig(branch, reason) {
+  if (branch === "plan" && reason.plan) return reason.plan;
+  return defaultBranchConfig[branch] || defaultBranchConfig.support;
+}
+
+function openSupportForm() {
+  window.open(SUPPORT_URL, "_blank", "noopener,noreferrer");
+}
 
 function CancellationReasonSelect({ selectedReasonId, onSelect, onContinue, onClose }) {
   return (
@@ -326,7 +402,7 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
         </label>
       )}
 
-      <div className={`cancel-save-card cancel-treatment-${reason.treatment}`}>
+      <div className={`cancel-save-card cancel-treatment-${reason.treatment} cancel-cta-count-${reason.ctas.length}`}>
         <span className="cancel-kicker">{engineLabel}</span>
         <h3>{reason.ctas[0].label}</h3>
         {isIssueFlow && !selectedIssueType && <p>Select an issue type above to continue with support.</p>}
@@ -354,7 +430,8 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
 
 function CancellationBranchScreen({ branch, reason, onBack, onDone, onCancel }) {
   const [choice, setChoice] = useState("");
-  const config = branchConfig[branch] || branchConfig.support;
+  const config = getBranchConfig(branch, reason);
+  const isSupport = branch === "support";
 
   return (
     <div className="cancel-step">
@@ -380,7 +457,7 @@ function CancellationBranchScreen({ branch, reason, onBack, onDone, onCancel }) 
 
       <div className="cancel-flow-actions">
         <Button variant="outline" onClick={onCancel}>Continue cancellation</Button>
-        <Button variant="primary" onClick={onDone}>{config.cta}</Button>
+        <Button variant="primary" onClick={isSupport ? openSupportForm : onDone}>{config.cta}</Button>
       </div>
     </div>
   );
@@ -454,6 +531,10 @@ export default function CancellationFlow({ open, onClose, onKept }) {
   };
 
   const handleAction = (action) => {
+    if (action.action === "support") {
+      openSupportForm();
+      return;
+    }
     setBranch(action.branch || "support");
     setStep("branch");
   };

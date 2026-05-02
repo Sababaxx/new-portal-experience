@@ -639,6 +639,28 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: 0 12px 36px rgba(7, 19, 46, .08);
 }
 
+.cancel-treatment-savings {
+  background:
+    radial-gradient(circle at 92% 18%, rgba(240, 92, 55, .16), transparent 30%),
+    linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+}
+
+.cancel-treatment-cadence,
+.cancel-treatment-control,
+.cancel-treatment-overstock {
+  background: linear-gradient(180deg, #ffffff 0%, #eef4ff 100%);
+}
+
+.cancel-treatment-issue {
+  border-style: dashed;
+  background: #ffffff;
+}
+
+.cancel-treatment-product-fit,
+.cancel-treatment-health-fit {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
 .cancel-save-card p,
 .cancel-confirm-card p {
   font-size: 13px;
@@ -721,6 +743,19 @@ button { font-family: inherit; cursor: pointer; }
   margin-top: 14px;
 }
 
+.cancel-cta-count-1 .cancel-save-grid {
+  grid-template-columns: 1fr;
+}
+
+.cancel-treatment-savings .cancel-save-grid,
+.cancel-treatment-overstock .cancel-save-grid,
+.cancel-treatment-cadence .cancel-save-grid,
+.cancel-treatment-control .cancel-save-grid,
+.cancel-treatment-portal-help .cancel-save-grid,
+.cancel-treatment-health-fit .cancel-save-grid {
+  grid-template-columns: 1.1fr .9fr;
+}
+
 .cancel-save-grid button,
 .cancel-option-pill {
   min-height: 42px;
@@ -751,6 +786,20 @@ button { font-family: inherit; cursor: pointer; }
 
 .cancel-save-grid button:last-child:nth-child(3) {
   grid-column: 1 / -1;
+}
+
+.cancel-treatment-overstock .cancel-save-grid button:last-child:nth-child(3),
+.cancel-treatment-cadence .cancel-save-grid button:last-child:nth-child(3),
+.cancel-treatment-portal-help .cancel-save-grid button:last-child:nth-child(3),
+.cancel-treatment-health-fit .cancel-save-grid button:last-child:nth-child(3) {
+  grid-column: auto;
+}
+
+.cancel-treatment-overstock .cancel-save-grid,
+.cancel-treatment-cadence .cancel-save-grid,
+.cancel-treatment-portal-help .cancel-save-grid,
+.cancel-treatment-health-fit .cancel-save-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .cancel-text-link {
@@ -3140,6 +3189,23 @@ button { font-family: inherit; cursor: pointer; }
   .cancel-issue-type {
     min-height: 42px;
     font-size: 12px;
+  }
+
+  .cancel-save-grid,
+  .cancel-treatment-savings .cancel-save-grid,
+  .cancel-treatment-overstock .cancel-save-grid,
+  .cancel-treatment-cadence .cancel-save-grid,
+  .cancel-treatment-control .cancel-save-grid,
+  .cancel-treatment-portal-help .cancel-save-grid,
+  .cancel-treatment-health-fit .cancel-save-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cancel-treatment-overstock .cancel-save-grid button:last-child:nth-child(3),
+  .cancel-treatment-cadence .cancel-save-grid button:last-child:nth-child(3),
+  .cancel-treatment-portal-help .cancel-save-grid button:last-child:nth-child(3),
+  .cancel-treatment-health-fit .cancel-save-grid button:last-child:nth-child(3) {
+    grid-column: 1 / -1;
   }
 
   .cancel-save-card,
