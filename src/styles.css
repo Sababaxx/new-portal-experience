@@ -644,6 +644,76 @@ button { font-family: inherit; cursor: pointer; }
   font-size: 13px;
 }
 
+.cancel-offer-note {
+  margin-top: 12px !important;
+  padding: 12px 14px;
+  border: 1px solid rgba(38, 83, 146, .24);
+  border-radius: 10px;
+  background: #f1f5f9;
+  font-size: 13px !important;
+}
+
+.cancel-issue-fields,
+.cancel-note-field {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.cancel-issue-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.cancel-issue-type {
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1.5px solid rgba(25, 59, 104, .32);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--omni-text);
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.cancel-issue-type.selected {
+  border-color: var(--omni-primary);
+  background: #f2f6ff;
+  box-shadow: 0 0 0 3px rgba(0, 34, 102, .10);
+}
+
+.cancel-issue-fields label,
+.cancel-note-field {
+  color: var(--omni-text);
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 850;
+}
+
+.cancel-issue-fields input,
+.cancel-issue-fields textarea,
+.cancel-note-field textarea {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1.5px solid rgba(25, 59, 104, .32);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--omni-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.cancel-issue-fields textarea,
+.cancel-note-field textarea {
+  resize: vertical;
+}
+
 .cancel-save-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -657,6 +727,13 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 8px;
   font-weight: 800;
   font-size: 13px;
+}
+
+.cancel-save-grid button:disabled {
+  cursor: not-allowed;
+  border-color: #cbd5e1;
+  background: #e2e8f0;
+  color: #64748b;
 }
 
 .cancel-save-primary {
@@ -679,6 +756,8 @@ button { font-family: inherit; cursor: pointer; }
 .cancel-text-link {
   margin-top: 18px;
   padding: 0;
+  font-size: 13px;
+  opacity: .9;
 }
 
 .cancel-branch-card {
@@ -3051,6 +3130,16 @@ button { font-family: inherit; cursor: pointer; }
   .cancel-reason-row small {
     font-size: 12px;
     line-height: 1.32;
+  }
+
+  .cancel-issue-type-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .cancel-issue-type {
+    min-height: 42px;
+    font-size: 12px;
   }
 
   .cancel-save-card,
