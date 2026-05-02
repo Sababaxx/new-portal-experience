@@ -301,6 +301,22 @@ const defaultBranchConfig = {
   },
 };
 
+const subReasonOptions = {
+  "no-results": ["Less than 4 weeks", "Taking inconsistently", "Not sure about dose", "Expected faster change"],
+  habit: ["Forget most days", "Travel schedule", "No set routine", "Timing feels awkward"],
+  stocked: ["One extra pouch", "Multiple pouches left", "Using it slower", "Travel or schedule change"],
+  expensive: ["Monthly cost", "Shipping cost", "Budget changed", "Want fewer orders"],
+  "flavor-texture": ["Too chewy", "Flavor too strong", "Aftertaste", "Prefer drink format"],
+  "trial-only": ["Only wanted one order", "Prefer manual orders", "Subscription anxiety", "Need more control"],
+  "no-longer-need": ["Routine changed", "Goal changed", "Taking a break", "Using another supplement"],
+  digestion: ["Mild stomach upset", "Too much at once", "Need food with it", "Want support advice"],
+  fast: ["Too frequent", "Wrong next date", "Travel conflict", "Need fewer shipments"],
+  alternative: ["Different brand", "Different format", "Friend recommended another", "Comparing value"],
+  sugar: ["Too sweet", "Avoiding sugar", "Prefer sugar free", "Want stick packs"],
+  editing: ["Cannot find controls", "Need date change", "Need product change", "Need billing help"],
+  other: ["Account question", "Product question", "Timing issue", "Something else"],
+};
+
 function getBranchConfig(branch, reason) {
   if (branch === "plan" && reason.plan) return reason.plan;
   return defaultBranchConfig[branch] || defaultBranchConfig.support;
@@ -345,8 +361,9 @@ function CancellationReasonSelect({ selectedReasonId, onSelect, onContinue, onCl
 }
 
 function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
-  const [selectedIssueType, setSelectedIssueType] = useState("");
+  const [selectedSubReason, setSelectedSubReason] = useState("");
   const isIssueFlow = Boolean(reason.issueFields);
+  const diagnosticOptions = reason.issueOptions || subReasonOptions[reason.id] || [];
   const engineLabel = isIssueFlow ? "Issue resolution route" : "Retention engine match";
 
   return (
@@ -360,39 +377,40 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
 
       {reason.offer && <p className="cancel-offer-note">{reason.offer}</p>}
 
-      {isIssueFlow && (
-        <>
-          <div className="cancel-issue-type-grid" aria-label="Issue type">
-            {reason.issueOptions.map((issueType) => (
+      {diagnosticOptions.length > 0 && (
+        <div className="cancel-diagnostic-block">
+          <span className="cancel-kicker">{isIssueFlow ? "Issue type" : "What best describes it?"}</span>
+          <div className="cancel-issue-type-grid" aria-label={isIssueFlow ? "Issue type" : "Cancellation sub reason"}>
+            {diagnosticOptions.map((option) => (
               <button
-                key={issueType}
+                key={option}
                 type="button"
-                className={`cancel-issue-type ${selectedIssueType === issueType ? "selected" : ""}`}
-                onClick={() => setSelectedIssueType(issueType)}
+                className={`cancel-issue-type ${selectedSubReason === option ? "selected" : ""}`}
+                onClick={() => setSelectedSubReason(option)}
               >
-                {issueType}
+                {option}
               </button>
             ))}
           </div>
+        </div>
+      )}
 
-          {selectedIssueType && (
-            <div className="cancel-issue-fields" aria-label="Product issue details">
-              <span className="cancel-kicker">Details for support</span>
-              <label>
-                Photo of the gummies
-                <input type="file" />
-              </label>
-              <label>
-                Lot number from the back of the sachet
-                <input type="text" placeholder="Lot number" />
-              </label>
-              <label>
-                Short description of the issue
-                <textarea rows="3" placeholder={`Tell us about: ${selectedIssueType}`} />
-              </label>
-            </div>
-          )}
-        </>
+      {isIssueFlow && selectedSubReason && (
+        <div className="cancel-issue-fields" aria-label="Product issue details">
+          <span className="cancel-kicker">Details for support</span>
+          <label>
+            Photo of the gummies
+            <input type="file" />
+          </label>
+          <label>
+            Lot number from the back of the sachet
+            <input type="text" placeholder="Lot number" />
+          </label>
+          <label>
+            Short description of the issue
+            <textarea rows="3" placeholder={`Tell us about: ${selectedSubReason}`} />
+          </label>
+        </div>
       )}
 
       {reason.noteField && (
@@ -405,14 +423,15 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
       <div className={`cancel-save-card cancel-treatment-${reason.treatment} cancel-cta-count-${reason.ctas.length}`}>
         <span className="cancel-kicker">{engineLabel}</span>
         <h3>{reason.ctas[0].label}</h3>
-        {isIssueFlow && !selectedIssueType && <p>Select an issue type above to continue with support.</p>}
+        {selectedSubReason && !isIssueFlow && <p>Selected: {selectedSubReason}</p>}
+        {isIssueFlow && !selectedSubReason && <p>Select an issue type above to continue with support.</p>}
         <div className="cancel-save-grid">
           {reason.ctas.map((action, index) => (
             <button
               key={`${reason.id}-${action.label}`}
               type="button"
               className={index === 0 ? "cancel-save-primary" : "cancel-save-secondary"}
-              disabled={isIssueFlow && !selectedIssueType}
+              disabled={isIssueFlow && !selectedSubReason}
               onClick={() => onAction(action)}
             >
               {action.label}

@@ -682,6 +682,14 @@ button { font-family: inherit; cursor: pointer; }
   margin-top: 16px;
 }
 
+.cancel-diagnostic-block {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid rgba(25, 59, 104, .18);
+  border-radius: 12px;
+  background: rgba(241, 245, 249, .68);
+}
+
 .cancel-issue-type-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
