@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Button from "./Button.jsx";
 
 const SUPPORT_URL = "https://contact.gorgias.help/en-US/forms/0c4rzba9";
+const FINAL_STEP_LABEL = "Review final step";
 
 function trackCancellationEvent(eventName, payload = {}) {
   const detail = { event: eventName, ...payload, timestamp: new Date().toISOString() };
@@ -349,19 +350,6 @@ const branchConfig = {
   },
 };
 
-function supportUrlWithContext(context) {
-  const url = new URL(SUPPORT_URL);
-  url.searchParams.set("context", context);
-  return url.toString();
-}
-
-function trackCancellationEvent(eventName, payload = {}) {
-  const detail = { event: eventName, ...payload, timestamp: new Date().toISOString() };
-  window.dispatchEvent(new CustomEvent("omni:cancellation", { detail }));
-  if (window.dataLayer) window.dataLayer.push(detail);
-  console.info("[OMNI cancellation]", detail);
-}
-
 function getBranchConfig(branch, reason) {
   if (branch === "plan" && reason.plan) return reason.plan;
   return branchConfig[branch] || branchConfig.skip;
@@ -508,7 +496,7 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
       </div>
 
       <button type="button" className="cancel-text-link" onClick={onCancel}>
-        Continue cancellation
+        {FINAL_STEP_LABEL}
       </button>
     </div>
   );
@@ -548,7 +536,7 @@ function CancellationBranchScreen({ branch, reason, preselect, onBack, onDone, o
 
       <div className="cancel-flow-actions cancel-flow-actions-sticky">
         <Button variant="primary" onClick={() => onDone(config.saved, choice)}>{choice ? `${config.cta}: ${choice}` : config.cta}</Button>
-        <button type="button" className="cancel-text-link" onClick={onCancel}>Continue cancellation</button>
+        <button type="button" className="cancel-text-link" onClick={onCancel}>{FINAL_STEP_LABEL}</button>
       </div>
     </div>
   );
