@@ -357,14 +357,20 @@ function getBranchConfig(branch, reason) {
 
 function ProductVisual({ imageKey }) {
   if (!imageKey) return null;
+  const productTitle = imageKey === "electrolytes" ? "Electrolyte stick packs" : "Better product fit";
+  const productCopy = imageKey === "electrolytes"
+    ? "A sugar free stick pack direction for customers who want creatine with added hydration support."
+    : "A cleaner product fit area for swapping format or flavor without ending the subscription.";
+
   return (
-    <div className={`cancel-product-visual cancel-product-visual-${imageKey}`}>
-      <div>
+    <article className={`cancel-product-visual cancel-product-visual-${imageKey}`}>
+      <div className="cancel-product-thumb" aria-hidden="true" />
+      <div className="cancel-product-copy">
         <span className="cancel-kicker">Product option</span>
-        <strong>{imageKey === "electrolytes" ? "Electrolyte stick packs" : "Better product fit"}</strong>
-        <small>Image asset slot ready for final OMNI product creative.</small>
+        <h3>{productTitle}</h3>
+        <p>{productCopy}</p>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -473,17 +479,27 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
         </label>
       )}
 
-      {reason.cards?.length > 0 && (
-        <div className="cancel-insight-grid">
-          {reason.cards.map((card) => <div key={card}>{card}</div>)}
-        </div>
-      )}
-
       <div className={`cancel-save-card cancel-treatment-${reason.treatment} cancel-cta-count-${reason.ctas.length}`}>
-        <span className="cancel-kicker">{engineLabel}</span>
-        <h3>{reason.ctas[0].label}</h3>
-        {selectedSubReason && !isIssueFlow && <p>Selected: {selectedSubReason}</p>}
-        {needsDiagnosticAnswer && !selectedSubReason && <p>Choose one option above to continue.</p>}
+        <div className="cancel-save-card-head">
+          <div>
+            <span className="cancel-kicker">{engineLabel}</span>
+            <h3>{reason.ctas[0].label}</h3>
+          </div>
+          {selectedSubReason && !isIssueFlow && <p className="cancel-selected-choice">Selected: {selectedSubReason}</p>}
+        </div>
+        {needsDiagnosticAnswer && !selectedSubReason && (
+          <p className="cancel-unlock-note">Choose one option above to unlock these actions.</p>
+        )}
+        {reason.cards?.length > 0 && (
+          <div className="cancel-insight-grid">
+            {reason.cards.map((card) => (
+              <article className="cancel-insight-card" key={card}>
+                <span aria-hidden="true">✓</span>
+                <strong>{card}</strong>
+              </article>
+            ))}
+          </div>
+        )}
         <div className="cancel-save-grid">
           {reason.ctas.map((action, index) => (
             <button
