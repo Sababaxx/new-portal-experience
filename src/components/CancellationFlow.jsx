@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Button from "./Button.jsx";
 
 const SUPPORT_URL = "https://contact.gorgias.help/en-US/forms/0c4rzba9";
-const FINAL_STEP_LABEL = "Review final step";
+const FINAL_STEP_LABEL = "Continue cancellation";
 
 function trackCancellationEvent(eventName, payload = {}) {
   const detail = { event: eventName, ...payload, timestamp: new Date().toISOString() };
@@ -407,6 +407,7 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
   const [note, setNote] = useState("");
   const isIssueFlow = Boolean(reason.issueFields);
   const diagnosticOptions = reason.issueOptions || reason.subReasons || [];
+  const needsDiagnosticAnswer = diagnosticOptions.length > 0;
   const engineLabel = isIssueFlow ? "Issue resolution route" : "Retention engine match";
 
   const handleAction = (action) => {
@@ -415,10 +416,6 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
 
   return (
     <div className="cancel-step cancel-save-step">
-      <div className="cancel-step-meta">
-        <button type="button" className="cancel-back-link" onClick={onBack}>Back to reasons</button>
-        <span className="cancel-selected-label">{reason.title}</span>
-      </div>
       <h2>{reason.headline}</h2>
       <p>{reason.body}</p>
 
@@ -479,14 +476,14 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
         <span className="cancel-kicker">{engineLabel}</span>
         <h3>{reason.ctas[0].label}</h3>
         {selectedSubReason && !isIssueFlow && <p>Selected: {selectedSubReason}</p>}
-        {isIssueFlow && !selectedSubReason && <p>Select an issue type above to unlock support.</p>}
+        {needsDiagnosticAnswer && !selectedSubReason && <p>Choose one option above to continue.</p>}
         <div className="cancel-save-grid">
           {reason.ctas.map((action, index) => (
             <button
               key={`${reason.id}-${action.label}`}
               type="button"
               className={index === 0 ? "cancel-save-primary" : "cancel-save-secondary"}
-              disabled={Boolean(action.requiresDetail && !selectedSubReason)}
+              disabled={needsDiagnosticAnswer && !selectedSubReason}
               onClick={() => handleAction(action)}
             >
               {action.label}
@@ -495,7 +492,12 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
         </div>
       </div>
 
-      <button type="button" className="cancel-text-link" onClick={onCancel}>
+      <button
+        type="button"
+        className="cancel-text-link"
+        onClick={onCancel}
+        disabled={needsDiagnosticAnswer && !selectedSubReason}
+      >
         {FINAL_STEP_LABEL}
       </button>
     </div>

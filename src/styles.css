@@ -817,6 +817,12 @@ button { font-family: inherit; cursor: pointer; }
   opacity: .9;
 }
 
+.cancel-text-link:disabled {
+  cursor: not-allowed;
+  opacity: .35;
+  text-decoration: none;
+}
+
 .cancel-branch-card {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
