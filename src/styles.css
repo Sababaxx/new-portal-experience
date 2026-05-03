@@ -676,6 +676,47 @@ button { font-family: inherit; cursor: pointer; }
   justify-items: center;
 }
 
+.cancel-progress {
+  display: grid;
+  width: min(100%, 700px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+.cancel-progress li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid rgba(25, 59, 104, .18);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--omni-text-3);
+  font-size: 11px;
+  line-height: 1.1;
+  font-weight: 850;
+}
+
+.cancel-progress li span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #b9c7d8;
+}
+
+.cancel-progress li.active {
+  border-color: var(--omni-primary);
+  background: #eef4ff;
+  color: var(--omni-primary);
+}
+
+.cancel-progress li.active span {
+  background: var(--omni-primary);
+}
+
 .cancel-rescue-step .cancel-step-head {
   width: min(100%, 700px);
   justify-self: center;
@@ -706,11 +747,61 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 700;
 }
 
-.cancel-rescue-actions {
+.cancel-recommended-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
   margin-top: 20px;
+  padding: 18px;
+  border: 2px solid var(--omni-primary);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(38, 83, 146, .16), transparent 30%),
+    #ffffff;
+  box-shadow: 0 12px 28px rgba(7, 19, 46, .09);
+}
+
+.cancel-recommended-pill {
+  display: inline-flex;
+  width: fit-content;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: var(--omni-primary);
+  color: #ffffff;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cancel-recommended-card strong {
+  color: var(--omni-text);
+  font-size: 20px;
+  line-height: 1.12;
+  font-weight: 900;
+}
+
+.cancel-recommended-card p {
+  margin: 0;
+  color: var(--omni-text-2);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.cancel-recommended-card button {
+  width: fit-content;
+  min-width: 210px;
+  min-height: 46px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.cancel-rescue-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
 }
 
 .cancel-rescue-actions button {
@@ -3455,6 +3546,30 @@ button { font-family: inherit; cursor: pointer; }
 
   .cancel-rescue-card h3 {
     font-size: 20px;
+  }
+
+  .cancel-progress {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .cancel-progress li {
+    padding: 8px 10px;
+  }
+
+  .cancel-recommended-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .cancel-recommended-card strong {
+    font-size: 17px;
+  }
+
+  .cancel-recommended-card button {
+    width: 100%;
+    min-width: 0;
   }
 
   .cancel-rescue-actions,

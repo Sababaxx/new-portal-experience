@@ -11,6 +11,15 @@ function trackCancellationEvent(eventName, payload = {}) {
   console.info("[OMNI cancellation]", detail);
 }
 
+function getActionEventName(action) {
+  const label = action.label.toLowerCase();
+  if (action.action === "support" || label.includes("support")) return "support_clicked";
+  if (action.branch === "pause" || label.includes("pause")) return "pause_clicked";
+  if (action.branch === "skip" || label.includes("skip")) return "skip_clicked";
+  if (action.branch === "cadence" || label.includes("week") || label.includes("delivery")) return "cadence_change_clicked";
+  return "save_action_clicked";
+}
+
 function supportUrlWithContext(context) {
   const url = new URL(SUPPORT_URL);
   url.searchParams.set("context", context);
@@ -226,7 +235,7 @@ const reasonConfig = [
       { label: "Pause subscription", branch: "pause" },
     ],
     supportContext: "Customer selected product issue during cancellation flow.",
-    reminder: "Support can review the product issue before final cancellation.",
+    reminder: "Support reviews product issues before you make the final call.",
   },
   {
     id: "packaging-issue",
@@ -242,7 +251,7 @@ const reasonConfig = [
       { label: "Pause subscription", branch: "pause" },
     ],
     supportContext: "Customer selected packaging issue during cancellation flow.",
-    reminder: "Support can review packaging problems before you cancel.",
+    reminder: "Support reviews packaging problems before you make the final call.",
   },
   {
     id: "alternative",
@@ -300,7 +309,7 @@ const reasonConfig = [
       { label: "Skip next order", branch: "skip" },
     ],
     supportContext: "Customer selected other reason during cancellation flow.",
-    reminder: "Support can review your note before you cancel.",
+    reminder: "Support reviews your note before you make the final call.",
   },
 ];
 
@@ -576,9 +585,10 @@ function getRescueConfig(reason) {
 
   if (productIssueIds.includes(reason.id)) {
     return {
-      eyebrow: "Support can help first",
-      title: "Product issue? Support can review it first",
-      body: "Most product issues can be routed quickly when we know what happened. You can contact support, pause your next order, or continue to the final cancellation step.",
+      eyebrow: "Support first",
+      title: "Route this to support before canceling",
+      body: "Most product issues get routed faster when support knows what happened. Send the issue to support, pause the next order, then decide.",
+      trust: "Support reviews product issues before you make a final decision.",
       actions: [
         { label: "Contact support", action: "support" },
         { label: "Pause subscription", branch: "pause" },
@@ -589,8 +599,9 @@ function getRescueConfig(reason) {
   if (overstockIds.includes(reason.id)) {
     return {
       eyebrow: "Adjust the pace",
-      title: "Too much product does not mean you need to cancel",
-      body: "Creatine works best with consistency, but your delivery schedule should match your pace. Stretch your next order out instead of stopping completely.",
+      title: "Stretch deliveries instead of stopping completely",
+      body: "Creatine works best with consistency, but your delivery schedule should match your pace. Move the cadence out and avoid overstock.",
+      trust: "Changing cadence avoids overstock without losing your routine.",
       actions: [
         { label: "Switch to 12 week delivery", branch: "cadence", preselect: "Every 12 weeks" },
         { label: "Skip next order", branch: "skip" },
@@ -601,8 +612,9 @@ function getRescueConfig(reason) {
   if (priceIds.includes(reason.id)) {
     return {
       eyebrow: "Reduce commitment",
-      title: "Keep the routine without overcommitting",
-      body: "Pausing or skipping keeps your account open so you can come back when timing feels better.",
+      title: "Pause your next order and keep control",
+      body: "Keep the account open without taking another delivery right now. Pause or skip while timing and budget reset.",
+      trust: "Pausing keeps your account open without another delivery.",
       actions: [
         { label: "Pause subscription", branch: "pause" },
         { label: "Skip next order", branch: "skip" },
@@ -613,8 +625,9 @@ function getRescueConfig(reason) {
   if (tasteIds.includes(reason.id)) {
     return {
       eyebrow: "Better fit option",
-      title: "Try a better fit before canceling",
-      body: "Flavor and format issues are fixable. Your subscription can stay active while you switch or pause your next delivery.",
+      title: "Fix the fit first, then decide",
+      body: "Flavor and format issues are fixable. Route the fit issue to support or pause the next delivery while you choose the better direction.",
+      trust: "Your subscription stays fully in your control.",
       actions: [
         { label: "Contact support", action: "support" },
         { label: "Pause subscription", branch: "pause" },
@@ -625,8 +638,9 @@ function getRescueConfig(reason) {
   if (noNeedIds.includes(reason.id)) {
     return {
       eyebrow: "Keep control",
-      title: "Keep control without closing the door",
-      body: "You can pause instead of canceling, so your subscription is not active until you are ready again.",
+      title: "Keep the door open without another delivery",
+      body: "Pause the account instead of closing it. Your subscription stays inactive until you are ready again.",
+      trust: "Pausing keeps your account open without another delivery.",
       actions: [
         { label: "Pause subscription", branch: "pause" },
         { label: "Skip next order", branch: "skip" },
@@ -636,8 +650,9 @@ function getRescueConfig(reason) {
 
   return {
     eyebrow: "One more option",
-    title: "Most issues can be fixed without canceling",
+    title: "Fix the issue first, then decide",
     body: "Choose the fastest option below and we will adjust your subscription around what you actually need.",
+    trust: "Your subscription stays fully in your control.",
     actions: [
       { label: "Pause subscription", branch: "pause" },
       { label: "Skip next order", branch: "skip" },
@@ -645,14 +660,35 @@ function getRescueConfig(reason) {
   };
 }
 
+function CancellationProgress({ current = "fix" }) {
+  const steps = [
+    { id: "reason", label: "Reason selected" },
+    { id: "fix", label: "Fix options" },
+    { id: "final", label: "Final confirmation" },
+  ];
+
+  return (
+    <ol className="cancel-progress" aria-label="Cancellation progress">
+      {steps.map((step) => (
+        <li key={step.id} className={step.id === current ? "active" : ""}>
+          <span aria-hidden="true" />
+          {step.label}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
   const rescue = getRescueConfig(reason);
+  const [recommendedAction, ...secondaryActions] = rescue.actions;
 
   return (
     <div className="cancel-step cancel-rescue-step">
+      <CancellationProgress current="fix" />
       <div className="cancel-step-head">
-        <span className="cancel-kicker">One last option</span>
-        <h2>Let’s fix this before you lose the benefits</h2>
+        <span className="cancel-kicker">Guided fix</span>
+        <h2>Give us one chance to make this right</h2>
         <p>Choose the fastest option below and we’ll adjust your subscription around what you actually need.</p>
       </div>
 
@@ -661,12 +697,25 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
         <h3>{rescue.title}</h3>
         <p>{rescue.body}</p>
 
+        <div className="cancel-recommended-card">
+          <span className="cancel-recommended-pill">Recommended</span>
+          <strong>{recommendedAction.label}</strong>
+          <p>{rescue.trust}</p>
+          <button
+            type="button"
+            className="cancel-save-primary"
+            onClick={() => onAction(recommendedAction)}
+          >
+            {recommendedAction.label}
+          </button>
+        </div>
+
         <div className="cancel-rescue-actions">
-          {rescue.actions.map((action, index) => (
+          {secondaryActions.map((action) => (
             <button
               key={`${reason.id}-rescue-${action.label}`}
               type="button"
-              className={index === 0 ? "cancel-save-primary" : "cancel-save-secondary"}
+              className="cancel-save-secondary"
               onClick={() => onAction(action)}
             >
               {action.label}
@@ -754,7 +803,10 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
 
   if (!open) return null;
 
-  const closeFlow = () => {
+  const closeFlow = ({ skipAbandonedEvent = false } = {}) => {
+    if (!skipAbandonedEvent && step === "confirm" && selectedReason?.id) {
+      trackCancellationEvent("final_cancellation_abandoned", { reasonId: selectedReason.id, source: "close" });
+    }
     setSelectedReasonId("");
     setStep("reason");
     setBranch("");
@@ -770,11 +822,11 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
 
   const handleReasonSelect = (reasonId) => {
     setSelectedReasonId(reasonId);
-    trackCancellationEvent("reason_selected", { reasonId });
+    trackCancellationEvent("cancellation_reason_selected", { reasonId });
   };
 
   const handleAction = (action, context = {}) => {
-    trackCancellationEvent("retention_cta_clicked", {
+    trackCancellationEvent(getActionEventName(action), {
       reasonId: selectedReason?.id,
       action: action.label,
       subReason: context.selectedSubReason,
@@ -787,8 +839,7 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
         context.note ? `Note: ${context.note}` : "",
       ].filter(Boolean).join(" ");
       window.open(supportUrlWithContext(supportContext), "_blank", "noopener,noreferrer");
-      trackCancellationEvent("support_route_started", { reasonId: selectedReason?.id, supportContext });
-      closeFlow();
+      closeFlow({ skipAbandonedEvent: true });
       onSupportStarted?.("Support request started.");
       return;
     }
@@ -807,7 +858,7 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
   };
 
   const reviewFinalStep = () => {
-    trackCancellationEvent("review_final_step_clicked", { reasonId: selectedReason?.id, step });
+    trackCancellationEvent("save_page_viewed", { reasonId: selectedReason?.id, step });
     setStep("rescue");
   };
 
@@ -817,8 +868,8 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
   };
 
   const keepSubscription = () => {
-    trackCancellationEvent("subscription_kept", { reasonId: selectedReason?.id });
-    closeFlow();
+    trackCancellationEvent("final_cancellation_abandoned", { reasonId: selectedReason?.id });
+    closeFlow({ skipAbandonedEvent: true });
     onKept();
   };
 
@@ -838,7 +889,7 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
             selectedReasonId={selectedReasonId}
             onSelect={handleReasonSelect}
             onContinue={() => {
-              trackCancellationEvent("save_page_opened", { reasonId: selectedReasonId });
+              trackCancellationEvent("save_page_viewed", { reasonId: selectedReasonId });
               setStep("save");
             }}
             onClose={closeFlow}
@@ -876,7 +927,7 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
             onBack={() => setStep("rescue")}
             onKeep={keepSubscription}
             onConfirm={() => {
-              trackCancellationEvent("cancellation_confirmed", { reasonId: selectedReason.id });
+              trackCancellationEvent("final_cancellation_confirmed", { reasonId: selectedReason.id });
               setSubmitted(true);
             }}
           />
