@@ -48,7 +48,6 @@ const reasonConfig = [
       cta: "Save my plan",
       saved: "Your consistency plan was saved.",
     },
-    reminder: "A consistency plan may help you judge results before leaving.",
   },
   {
     id: "habit",
@@ -71,7 +70,6 @@ const reasonConfig = [
       cta: "Save habit plan",
       saved: "Your habit plan was saved.",
     },
-    reminder: "A habit plan can make the routine easier before you cancel.",
   },
   {
     id: "stocked",
@@ -88,7 +86,6 @@ const reasonConfig = [
       { label: "Move to 12 weeks", branch: "cadence", preselect: "Every 12 weeks" },
       { label: "Pause subscription", branch: "pause" },
     ],
-    reminder: "Skipping or slowing down gives you time to use your current supply.",
   },
   {
     id: "expensive",
@@ -105,7 +102,6 @@ const reasonConfig = [
       { label: "Skip and keep offer", branch: "savings", preselect: "Skip next order and keep offer" },
       { label: "Move to 8 weeks", branch: "cadence", preselect: "Every 8 weeks" },
     ],
-    reminder: "Savings may lower the cost while keeping your member setup active.",
   },
   {
     id: "trial-only",
@@ -121,7 +117,6 @@ const reasonConfig = [
       { label: "Pause subscription", branch: "pause" },
       { label: "Move to 8 weeks", branch: "cadence", preselect: "Every 8 weeks" },
     ],
-    reminder: "You can keep the better price without taking another immediate shipment.",
   },
   {
     id: "flavor-texture",
@@ -144,7 +139,6 @@ const reasonConfig = [
       cta: "Save product plan",
       saved: "Your product plan was saved.",
     },
-    reminder: "A product swap may solve the fit issue without canceling.",
   },
   {
     id: "sugar",
@@ -162,7 +156,6 @@ const reasonConfig = [
       { label: "Contact support", action: "support" },
     ],
     supportContext: "Customer selected too much sugar or too sweet during cancellation flow.",
-    reminder: "A sugar free swap may be a better fit than cancelling.",
   },
   {
     id: "digestion",
@@ -186,7 +179,6 @@ const reasonConfig = [
       saved: "Your gentler routine was saved.",
     },
     supportContext: "Customer selected digestion discomfort during cancellation flow.",
-    reminder: "A slower routine or support check may help before final cancellation.",
   },
   {
     id: "fast",
@@ -203,7 +195,6 @@ const reasonConfig = [
       { label: "Choose custom date", branch: "cadence", preselect: "Custom date" },
       { label: "Skip next order", branch: "skip" },
     ],
-    reminder: "Frequency controls can solve timing issues without ending the subscription.",
   },
   {
     id: "no-longer-need",
@@ -219,7 +210,6 @@ const reasonConfig = [
       { label: "Skip next order", branch: "skip" },
       { label: "Move to 12 weeks", branch: "cadence", preselect: "Every 12 weeks" },
     ],
-    reminder: "Pausing keeps your setup ready if you want OMNI again later.",
   },
   {
     id: "product-issue",
@@ -235,7 +225,6 @@ const reasonConfig = [
       { label: "Pause subscription", branch: "pause" },
     ],
     supportContext: "Customer selected product issue during cancellation flow.",
-    reminder: "Support reviews product issues before you make the final call.",
   },
   {
     id: "packaging-issue",
@@ -251,7 +240,6 @@ const reasonConfig = [
       { label: "Pause subscription", branch: "pause" },
     ],
     supportContext: "Customer selected packaging issue during cancellation flow.",
-    reminder: "Support reviews packaging problems before you make the final call.",
   },
   {
     id: "alternative",
@@ -274,7 +262,6 @@ const reasonConfig = [
       cta: "Save better setup",
       saved: "Your better setup was saved.",
     },
-    reminder: "A quick comparison may help before you give up member benefits.",
   },
   {
     id: "editing",
@@ -292,7 +279,6 @@ const reasonConfig = [
       { label: "Contact support", action: "support" },
     ],
     supportContext: "Trouble editing subscription in portal.",
-    reminder: "Portal controls can fix most subscription timing issues.",
   },
   {
     id: "other",
@@ -309,7 +295,6 @@ const reasonConfig = [
       { label: "Skip next order", branch: "skip" },
     ],
     supportContext: "Customer selected other reason during cancellation flow.",
-    reminder: "Support reviews your note before you make the final call.",
   },
 ];
 
@@ -732,7 +717,63 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
   );
 }
 
+function getFinalConfirmConfig(reason) {
+  const productIssueIds = ["product-issue", "packaging-issue", "flavor-texture", "sugar", "digestion"];
+  const overstockIds = ["stocked", "fast"];
+  const priceIds = ["expensive"];
+  const alternativeIds = ["alternative"];
+  const noLongerUsingIds = ["no-longer-need", "trial-only"];
+
+  if (productIssueIds.includes(reason.id)) {
+    return {
+      pill: "Product issue",
+      title: "You can still let support review this first.",
+      body: "If you continue, your subscription will be cancelled. If you want the team to review the issue before you decide, go back to the fix options.",
+    };
+  }
+
+  if (overstockIds.includes(reason.id)) {
+    return {
+      pill: "Too much product",
+      title: "You can still slow deliveries instead of cancelling.",
+      body: "If you continue, your subscription will be cancelled. If timing is the issue, go back to switch cadence or skip your next order.",
+    };
+  }
+
+  if (priceIds.includes(reason.id)) {
+    return {
+      pill: "Price concern",
+      title: "You can still pause instead of cancelling.",
+      body: "If you continue, your subscription will be cancelled. If now is not the right time, go back to pause or skip your next order.",
+    };
+  }
+
+  if (alternativeIds.includes(reason.id)) {
+    return {
+      pill: "Considering another product",
+      title: "You can still keep your OMNI subscription active.",
+      body: "If you continue, your subscription will be cancelled. If you want to compare options first, go back to the fix options.",
+    };
+  }
+
+  if (noLongerUsingIds.includes(reason.id)) {
+    return {
+      pill: "Not using it right now",
+      title: "You can still keep control without another delivery.",
+      body: "If you continue, your subscription will be cancelled. If you may come back later, go back to pause instead.",
+    };
+  }
+
+  return {
+    pill: "Other reason",
+    title: "You can still choose a lighter option.",
+    body: "If you continue, your subscription will be cancelled. If you want to pause, skip, or contact support first, go back to the fix options.",
+  };
+}
+
 function CancellationFinalConfirm({ reason, onBack, onKeep, onConfirm }) {
+  const finalCopy = getFinalConfirmConfig(reason);
+
   return (
     <div className="cancel-step cancel-confirm-step">
       <div className="cancel-confirm-shell">
@@ -743,9 +784,9 @@ function CancellationFinalConfirm({ reason, onBack, onKeep, onConfirm }) {
         <h2>Before you cancel</h2>
 
         <div className="cancel-confirm-card">
-          <span className="cancel-selected-label">{reason.title}</span>
-          <p>{reason.reminder}</p>
-          <small>Your subscription will stay active until this request is completed.</small>
+          <span className="cancel-selected-label">{finalCopy.pill}</span>
+          <h3>{finalCopy.title}</h3>
+          <p>{finalCopy.body}</p>
         </div>
 
         <div className="cancel-confirm-actions">
@@ -771,9 +812,9 @@ function CancellationSavedScreen({ message, onDone }) {
 function CancellationCompleteScreen({ onDone }) {
   return (
     <div className="cancel-step cancel-complete-step">
-      <span className="cancel-kicker">Request submitted</span>
-      <h2>Subscription cancellation submitted.</h2>
-      <p>Your request has been recorded. Check your email for cancellation details and confirmation.</p>
+      <span className="cancel-kicker">Cancelled</span>
+      <h2>Your subscription has been cancelled.</h2>
+      <p>You’ll receive a confirmation email with the cancellation details.</p>
       <Button variant="primary" onClick={onDone}>Done</Button>
     </div>
   );
