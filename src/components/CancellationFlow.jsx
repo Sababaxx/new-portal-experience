@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Button from "./Button.jsx";
 
 const SUPPORT_URL = "https://contact.gorgias.help/en-US/forms/0c4rzba9";
-const FINAL_STEP_LABEL = "Continue cancellation";
+const FINAL_STEP_LABEL = "Review final step";
 
 function trackCancellationEvent(eventName, payload = {}) {
   const detail = { event: eventName, ...payload, timestamp: new Date().toISOString() };
@@ -409,9 +409,16 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
   const diagnosticOptions = reason.issueOptions || reason.subReasons || [];
   const needsDiagnosticAnswer = diagnosticOptions.length > 0;
   const engineLabel = isIssueFlow ? "Issue resolution route" : "Retention engine match";
+  const canContinue = !needsDiagnosticAnswer || Boolean(selectedSubReason);
 
   const handleAction = (action) => {
+    if (!canContinue) return;
     onAction(action, { selectedSubReason, note });
+  };
+
+  const handleCancel = () => {
+    if (!canContinue) return;
+    onCancel();
   };
 
   return (
@@ -483,7 +490,7 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
               key={`${reason.id}-${action.label}`}
               type="button"
               className={index === 0 ? "cancel-save-primary" : "cancel-save-secondary"}
-              disabled={needsDiagnosticAnswer && !selectedSubReason}
+              disabled={!canContinue}
               onClick={() => handleAction(action)}
             >
               {action.label}
@@ -495,8 +502,8 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
       <button
         type="button"
         className="cancel-text-link"
-        onClick={onCancel}
-        disabled={needsDiagnosticAnswer && !selectedSubReason}
+        onClick={handleCancel}
+        disabled={!canContinue}
       >
         {FINAL_STEP_LABEL}
       </button>
