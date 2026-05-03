@@ -567,24 +567,142 @@ function CancellationBranchScreen({ branch, reason, preselect, onBack, onDone, o
   );
 }
 
+function getRescueConfig(reason) {
+  const productIssueIds = ["product-issue", "packaging-issue"];
+  const overstockIds = ["stocked", "fast"];
+  const priceIds = ["expensive"];
+  const tasteIds = ["flavor-texture", "sugar", "digestion"];
+  const noNeedIds = ["no-longer-need", "trial-only", "habit", "no-results", "alternative", "editing", "other"];
+
+  if (productIssueIds.includes(reason.id)) {
+    return {
+      eyebrow: "Support can help first",
+      title: "Product issue? Support can review it first",
+      body: "Most product issues can be routed quickly when we know what happened. You can contact support, pause your next order, or continue to the final cancellation step.",
+      actions: [
+        { label: "Contact support", action: "support" },
+        { label: "Pause subscription", branch: "pause" },
+      ],
+    };
+  }
+
+  if (overstockIds.includes(reason.id)) {
+    return {
+      eyebrow: "Adjust the pace",
+      title: "Too much product does not mean you need to cancel",
+      body: "Creatine works best with consistency, but your delivery schedule should match your pace. Stretch your next order out instead of stopping completely.",
+      actions: [
+        { label: "Switch to 12 week delivery", branch: "cadence", preselect: "Every 12 weeks" },
+        { label: "Skip next order", branch: "skip" },
+      ],
+    };
+  }
+
+  if (priceIds.includes(reason.id)) {
+    return {
+      eyebrow: "Reduce commitment",
+      title: "Keep the routine without overcommitting",
+      body: "Pausing or skipping keeps your account open so you can come back when timing feels better.",
+      actions: [
+        { label: "Pause subscription", branch: "pause" },
+        { label: "Skip next order", branch: "skip" },
+      ],
+    };
+  }
+
+  if (tasteIds.includes(reason.id)) {
+    return {
+      eyebrow: "Better fit option",
+      title: "Try a better fit before canceling",
+      body: "Flavor and format issues are fixable. Your subscription can stay active while you switch or pause your next delivery.",
+      actions: [
+        { label: "Contact support", action: "support" },
+        { label: "Pause subscription", branch: "pause" },
+      ],
+    };
+  }
+
+  if (noNeedIds.includes(reason.id)) {
+    return {
+      eyebrow: "Keep control",
+      title: "Keep control without closing the door",
+      body: "You can pause instead of canceling, so your subscription is not active until you are ready again.",
+      actions: [
+        { label: "Pause subscription", branch: "pause" },
+        { label: "Skip next order", branch: "skip" },
+      ],
+    };
+  }
+
+  return {
+    eyebrow: "One more option",
+    title: "Most issues can be fixed without canceling",
+    body: "Choose the fastest option below and we will adjust your subscription around what you actually need.",
+    actions: [
+      { label: "Pause subscription", branch: "pause" },
+      { label: "Skip next order", branch: "skip" },
+    ],
+  };
+}
+
+function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
+  const rescue = getRescueConfig(reason);
+
+  return (
+    <div className="cancel-step cancel-rescue-step">
+      <div className="cancel-step-head">
+        <span className="cancel-kicker">One last option</span>
+        <h2>Let’s fix this before you lose the benefits</h2>
+        <p>Choose the fastest option below and we’ll adjust your subscription around what you actually need.</p>
+      </div>
+
+      <article className={`cancel-rescue-card cancel-treatment-${reason.treatment}`}>
+        <span className="cancel-kicker">{rescue.eyebrow}</span>
+        <h3>{rescue.title}</h3>
+        <p>{rescue.body}</p>
+
+        <div className="cancel-rescue-actions">
+          {rescue.actions.map((action, index) => (
+            <button
+              key={`${reason.id}-rescue-${action.label}`}
+              type="button"
+              className={index === 0 ? "cancel-save-primary" : "cancel-save-secondary"}
+              onClick={() => onAction(action)}
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+      </article>
+
+      <div className="cancel-rescue-footer">
+        <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
+        <button type="button" className="cancel-text-link" onClick={onContinue}>Continue to final cancellation</button>
+      </div>
+    </div>
+  );
+}
+
 function CancellationFinalConfirm({ reason, onBack, onKeep, onConfirm }) {
   return (
     <div className="cancel-step cancel-confirm-step">
-      <div className="cancel-step-meta">
-        <button type="button" className="cancel-back-link" onClick={onBack}>Back to save page</button>
-        <span className="cancel-kicker">Final confirmation</span>
-      </div>
-      <h2>Before you cancel</h2>
+      <div className="cancel-confirm-shell">
+        <div className="cancel-step-meta">
+          <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
+          <span className="cancel-kicker">Final confirmation</span>
+        </div>
+        <h2>Before you cancel</h2>
 
-      <div className="cancel-confirm-card">
-        <span className="cancel-selected-label">{reason.title}</span>
-        <p>{reason.reminder}</p>
-        <small>Confirming cancellation will submit this request locally in the prototype. No backend action is connected yet.</small>
-      </div>
+        <div className="cancel-confirm-card">
+          <span className="cancel-selected-label">{reason.title}</span>
+          <p>{reason.reminder}</p>
+          <small>Your subscription will stay active until this request is completed.</small>
+        </div>
 
-      <div className="cancel-flow-actions cancel-flow-actions-sticky">
-        <Button variant="outline" onClick={onKeep}>Keep subscription</Button>
-        <Button variant="primary" onClick={onConfirm}>Confirm cancellation</Button>
+        <div className="cancel-confirm-actions">
+          <Button variant="outline" onClick={onKeep}>Keep subscription</Button>
+          <Button variant="primary" onClick={onConfirm}>Confirm cancellation</Button>
+        </div>
       </div>
     </div>
   );
@@ -595,7 +713,7 @@ function CancellationSavedScreen({ message, onDone }) {
     <div className="cancel-step cancel-complete-step">
       <span className="cancel-kicker">Saved</span>
       <h2>{message}</h2>
-      <p>Your subscription stays active in this prototype. You can return to the overview and keep managing your order.</p>
+      <p>Your subscription stays active. You can return to the overview and keep managing your order.</p>
       <Button variant="primary" onClick={onDone}>Return to subscription overview</Button>
     </div>
   );
@@ -606,7 +724,7 @@ function CancellationCompleteScreen({ onDone }) {
     <div className="cancel-step cancel-complete-step">
       <span className="cancel-kicker">Request submitted</span>
       <h2>Subscription cancellation submitted.</h2>
-      <p>This prototype records the cancellation locally. A real version would show the cancellation date and email confirmation details.</p>
+      <p>Your request has been recorded. Check your email for cancellation details and confirmation.</p>
       <Button variant="primary" onClick={onDone}>Done</Button>
     </div>
   );
@@ -688,8 +806,13 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
     trackCancellationEvent("save_completed", { reasonId: selectedReason?.id, branch, choice, message: finalMessage });
   };
 
-  const continueCancellation = () => {
-    trackCancellationEvent("continue_cancellation_clicked", { reasonId: selectedReason?.id, step });
+  const reviewFinalStep = () => {
+    trackCancellationEvent("review_final_step_clicked", { reasonId: selectedReason?.id, step });
+    setStep("rescue");
+  };
+
+  const continueToFinalConfirmation = () => {
+    trackCancellationEvent("continue_to_final_cancellation_clicked", { reasonId: selectedReason?.id, step });
     setStep("confirm");
   };
 
@@ -726,7 +849,7 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
             reason={selectedReason}
             onBack={() => setStep("reason")}
             onAction={handleAction}
-            onCancel={continueCancellation}
+            onCancel={reviewFinalStep}
           />
         )}
         {!submitted && !savedMessage && step === "branch" && selectedReason && (
@@ -736,13 +859,21 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
             reason={selectedReason}
             onBack={() => setStep("save")}
             onDone={handleSaved}
-            onCancel={continueCancellation}
+            onCancel={reviewFinalStep}
+          />
+        )}
+        {!submitted && !savedMessage && step === "rescue" && selectedReason && (
+          <CancellationRescuePage
+            reason={selectedReason}
+            onBack={() => setStep("save")}
+            onAction={(action) => handleAction(action, { selectedSubReason: "Final save attempt" })}
+            onContinue={continueToFinalConfirmation}
           />
         )}
         {!submitted && !savedMessage && step === "confirm" && selectedReason && (
           <CancellationFinalConfirm
             reason={selectedReason}
-            onBack={() => setStep("save")}
+            onBack={() => setStep("rescue")}
             onKeep={keepSubscription}
             onConfirm={() => {
               trackCancellationEvent("cancellation_confirmed", { reasonId: selectedReason.id });

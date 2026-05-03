@@ -623,12 +623,14 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .cancel-save-step,
+.cancel-rescue-step,
 .cancel-confirm-step,
 .cancel-complete-step {
   max-width: 700px;
 }
 
 .cancel-save-card,
+.cancel-rescue-card,
 .cancel-confirm-card,
 .cancel-branch-card {
   margin-top: 20px;
@@ -664,8 +666,88 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .cancel-save-card p,
+.cancel-rescue-card p,
 .cancel-confirm-card p {
   font-size: 13px;
+}
+
+.cancel-rescue-step {
+  display: grid;
+  justify-items: center;
+}
+
+.cancel-rescue-step .cancel-step-head {
+  width: min(100%, 700px);
+  justify-self: center;
+}
+
+.cancel-rescue-card {
+  width: min(100%, 700px);
+  padding: 24px;
+  border-width: 2px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(38, 83, 146, .12), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
+}
+
+.cancel-rescue-card h3 {
+  margin: 0 0 8px;
+  color: var(--omni-text);
+  font-size: 24px;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.cancel-rescue-card p {
+  max-width: 560px;
+  color: var(--omni-text-2);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.cancel-rescue-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-rescue-actions button {
+  min-height: 46px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.cancel-rescue-footer {
+  display: flex;
+  width: min(100%, 700px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.cancel-confirm-step {
+  max-width: none;
+}
+
+.cancel-confirm-shell {
+  width: min(100%, 700px);
+  margin: 0 auto;
+}
+
+.cancel-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.cancel-confirm-actions .btn {
+  min-width: 178px;
+  min-height: 46px;
 }
 
 .cancel-offer-note {
@@ -3363,11 +3445,44 @@ button { font-family: inherit; cursor: pointer; }
   }
 
   .cancel-save-card,
+  .cancel-rescue-card,
   .cancel-confirm-card,
   .cancel-branch-card {
     margin-top: 14px;
     padding: 14px;
     border-radius: 12px;
+  }
+
+  .cancel-rescue-card h3 {
+    font-size: 20px;
+  }
+
+  .cancel-rescue-actions,
+  .cancel-confirm-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    width: 100%;
+    margin-top: 18px;
+  }
+
+  .cancel-rescue-actions button,
+  .cancel-confirm-actions .btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  .cancel-rescue-footer {
+    display: grid;
+    width: 100%;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .cancel-rescue-footer .cancel-back-link,
+  .cancel-rescue-footer .cancel-text-link {
+    justify-self: start;
   }
 
   .cancel-flow-actions {
