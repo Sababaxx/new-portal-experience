@@ -372,9 +372,9 @@ function CancellationReasonSelect({ selectedReasonId, onSelect, onContinue, onCl
   return (
     <div className="cancel-step">
       <div className="cancel-step-head">
-        <span className="cancel-kicker">Cancellation flow</span>
-        <h2>Before you cancel, what should we fix first?</h2>
-        <p>Choose the closest reason so we can show the best option before you make the final call.</p>
+        <span className="cancel-kicker">Cancellation options</span>
+        <h2>Want to adjust anything before you cancel?</h2>
+        <p>Choose the closest option so we can show the most useful next step.</p>
       </div>
 
       <div className="cancel-reason-list">
@@ -408,7 +408,7 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
   const isIssueFlow = Boolean(reason.issueFields);
   const diagnosticOptions = reason.issueOptions || reason.subReasons || [];
   const needsDiagnosticAnswer = diagnosticOptions.length > 0;
-  const engineLabel = isIssueFlow ? "Issue resolution route" : "Retention engine match";
+  const engineLabel = isIssueFlow ? "Support option" : "Recommended option";
   const canContinue = !needsDiagnosticAnswer || Boolean(selectedSubReason);
 
   const handleAction = (action) => {
@@ -645,30 +645,6 @@ function getRescueConfig(reason) {
   };
 }
 
-function CancellationProgress({ current = "fix" }) {
-  const steps = [
-    { id: "reason", label: "Reason selected" },
-    { id: "fix", label: "Fix options" },
-    { id: "final", label: "Final confirmation" },
-  ];
-  const currentIndex = steps.findIndex((step) => step.id === current);
-
-  return (
-    <ol className="cancel-progress" aria-label="Cancellation progress">
-      {steps.map((step, index) => {
-        const state = index < currentIndex ? "complete" : step.id === current ? "active" : "idle";
-
-        return (
-        <li key={step.id} className={state}>
-          <span aria-hidden="true">{state === "complete" ? "✓" : ""}</span>
-          {step.label}
-        </li>
-        );
-      })}
-    </ol>
-  );
-}
-
 function CancellationModalHeader({ onClose }) {
   return (
     <div className="cancel-modal-header">
@@ -687,9 +663,9 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
   return (
     <div className="cancel-step cancel-rescue-step">
       <div className="cancel-step-head">
-        <span className="cancel-kicker">Guided fix</span>
-        <h2>Give us one chance to make this right</h2>
-        <p>Choose the fastest option below and we’ll adjust your subscription around what you actually need.</p>
+        <span className="cancel-kicker">Account options</span>
+        <h2>Choose what you’d like to do next</h2>
+        <p>Here’s the option that best matches what you selected.</p>
       </div>
 
       <article className={`cancel-rescue-card cancel-treatment-${reason.treatment}`}>
@@ -786,7 +762,7 @@ function getFinalConfirmConfig(reason) {
   };
 }
 
-function CancellationFinalConfirm({ reason, onBack, onKeep, onConfirm }) {
+function CancellationFinalConfirm({ reason, onBack, onConfirm }) {
   const finalCopy = getFinalConfirmConfig(reason);
 
   return (
@@ -794,9 +770,10 @@ function CancellationFinalConfirm({ reason, onBack, onKeep, onConfirm }) {
       <div className="cancel-confirm-shell">
         <div className="cancel-step-meta">
           <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
-          <span className="cancel-kicker">Final confirmation</span>
+          <span className="cancel-kicker">Final choice</span>
         </div>
-        <h2>Before you cancel</h2>
+        <h2>Choose how you’d like to finish</h2>
+        <p className="cancel-final-subcopy">Your subscription can be cancelled now, or you can adjust the next order instead.</p>
 
         <div className="cancel-confirm-card">
           <span className="cancel-selected-label">{finalCopy.pill}</span>
@@ -805,8 +782,8 @@ function CancellationFinalConfirm({ reason, onBack, onKeep, onConfirm }) {
         </div>
 
         <div className="cancel-confirm-actions">
-          <Button variant="outline" onClick={onKeep}>Keep subscription</Button>
-          <Button variant="primary" onClick={onConfirm}>Confirm cancellation</Button>
+          <Button variant="primary" onClick={onBack}>Adjust next order</Button>
+          <Button variant="outline" onClick={onConfirm}>Cancel subscription</Button>
         </div>
       </div>
     </div>
@@ -829,7 +806,7 @@ function CancellationCompleteScreen({ onDone }) {
     <div className="cancel-step cancel-complete-step cancel-complete-step-cancelled">
       <span className="cancel-kicker">Cancelled</span>
       <h2>Your subscription has been cancelled.</h2>
-      <p>You’ll receive a confirmation email with the cancellation details.</p>
+      <p>You’ll still have access to your account if you want to restart later.</p>
       <Button variant="primary" onClick={onDone}>Done</Button>
     </div>
   );
@@ -923,14 +900,6 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
     setStep("confirm");
   };
 
-  const keepSubscription = () => {
-    trackCancellationEvent("final_cancellation_abandoned", { reasonId: selectedReason?.id });
-    closeFlow({ skipAbandonedEvent: true });
-    onKept();
-  };
-  const progressStep = step === "reason" ? "reason" : step === "confirm" ? "final" : "fix";
-  const showProgress = !submitted && !savedMessage;
-
   return (
     <div className="cancel-flow-backdrop" role="presentation" onClick={handleBackdrop}>
       <section
@@ -941,7 +910,6 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
         onClick={(event) => event.stopPropagation()}
       >
         <CancellationModalHeader onClose={closeFlow} />
-        {showProgress && <CancellationProgress current={progressStep} />}
 
         {!submitted && !savedMessage && step === "reason" && (
           <CancellationReasonSelect
@@ -984,7 +952,6 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
           <CancellationFinalConfirm
             reason={selectedReason}
             onBack={() => setStep("rescue")}
-            onKeep={keepSubscription}
             onConfirm={() => {
               trackCancellationEvent("final_cancellation_confirmed", { reasonId: selectedReason.id });
               setSubmitted(true);
