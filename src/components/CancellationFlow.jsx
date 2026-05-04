@@ -531,12 +531,14 @@ function CancellationBranchScreen({ branch, reason, preselect, onBack, onDone, o
 
   return (
     <div className="cancel-step">
-      <div className="cancel-step-meta">
+      <div className="cancel-step-back-row">
         <button type="button" className="cancel-back-link" onClick={onBack}>Back to save page</button>
-        <span className="cancel-selected-label">{reason.title}</span>
       </div>
-      <h2>{config.title}</h2>
-      <p>{config.body}</p>
+      <div className="cancel-step-head cancel-stacked-head">
+        <span className="cancel-selected-label">{reason.title}</span>
+        <h2>{config.title}</h2>
+        <p>{config.body}</p>
+      </div>
 
       <div className="cancel-branch-card">
         {config.options.map((option) => (
@@ -678,7 +680,10 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
 
   return (
     <div className="cancel-step cancel-rescue-step">
-      <div className="cancel-step-head">
+      <div className="cancel-step-back-row">
+        <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
+      </div>
+      <div className="cancel-step-head cancel-stacked-head">
         <span className="cancel-kicker">Account options</span>
         <h2>Choose what you’d like to do next</h2>
         <p>Here’s the option that best matches what you selected.</p>
@@ -712,8 +717,7 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
         </div>
       </article>
 
-      <div className="cancel-rescue-footer">
-        <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
+      <div className="cancel-rescue-footer cancel-rescue-footer-single">
         <button type="button" className="cancel-text-link" onClick={onContinue}>Continue to final cancellation</button>
       </div>
     </div>
@@ -780,12 +784,14 @@ function CancellationFinalConfirm({ reason, onBack, onConfirm }) {
   return (
     <div className="cancel-step cancel-confirm-step">
       <div className="cancel-confirm-shell">
-        <div className="cancel-step-meta">
+        <div className="cancel-step-back-row">
           <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
-          <span className="cancel-kicker">Final choice</span>
         </div>
-        <h2>Choose how you’d like to finish</h2>
-        <p className="cancel-final-subcopy">Your subscription can be cancelled now, or you can adjust the next order instead.</p>
+        <div className="cancel-step-head cancel-stacked-head">
+          <span className="cancel-kicker">Final choice</span>
+          <h2>Choose how you’d like to finish</h2>
+          <p className="cancel-final-subcopy">Your subscription can be cancelled now, or you can adjust the next order instead.</p>
+        </div>
 
         <div className="cancel-confirm-card">
           <span className="cancel-selected-label">{finalCopy.pill}</span>

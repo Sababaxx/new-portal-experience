@@ -4127,10 +4127,58 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 650;
 }
 
+.cancel-step-back-row {
+  width: min(100%, 920px);
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.cancel-stacked-head {
+  width: min(100%, 920px);
+  max-width: 920px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.cancel-stacked-head .cancel-kicker,
+.cancel-stacked-head .cancel-selected-label {
+  margin-bottom: 12px;
+}
+
+.cancel-confirm-shell .cancel-step-back-row,
+.cancel-confirm-shell .cancel-stacked-head {
+  width: min(100%, 700px);
+  max-width: 700px;
+}
+
+.cancel-rescue-footer-single {
+  justify-content: flex-end;
+}
+
 .cancel-confirm-actions {
   align-items: center;
 }
 
 .cancel-complete-step-cancelled p {
   max-width: 760px;
+}
+
+@media (max-width: 700px) {
+  .cancel-step-back-row,
+  .cancel-stacked-head,
+  .cancel-confirm-shell .cancel-step-back-row,
+  .cancel-confirm-shell .cancel-stacked-head {
+    width: 100%;
+    max-width: none;
+  }
+
+  .cancel-step-back-row {
+    margin-bottom: 14px;
+  }
+
+  .cancel-rescue-footer-single {
+    align-items: stretch;
+  }
 }
