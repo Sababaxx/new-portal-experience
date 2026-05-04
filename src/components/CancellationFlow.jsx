@@ -645,6 +645,18 @@ function getRescueConfig(reason) {
   };
 }
 
+function getRescueActionCopy(action, rescue) {
+  const label = action.label.toLowerCase();
+  if (label.includes("support")) return "Send this to support so the team can help before you decide.";
+  if (label.includes("pause")) return "Pause deliveries and keep your account open until you are ready.";
+  if (label.includes("skip")) return "Skip the next shipment while keeping the subscription active.";
+  if (label.includes("12 week")) return "Stretch future deliveries so your next order matches your pace.";
+  if (label.includes("8 week")) return "Slow the cadence while keeping your member setup active.";
+  if (label.includes("savings") || label.includes("offer")) return "Keep your member setup while making the next orders easier.";
+  if (label.includes("product") || label.includes("stick")) return "Switch the product direction without closing your subscription.";
+  return rescue.trust || "Keep control of your subscription without closing the account.";
+}
+
 function CancellationModalHeader({ onClose }) {
   return (
     <div className="cancel-modal-header">
@@ -659,6 +671,10 @@ function CancellationModalHeader({ onClose }) {
 function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
   const rescue = getRescueConfig(reason);
   const [recommendedAction, ...secondaryActions] = rescue.actions;
+  const actionCards = [
+    { ...recommendedAction, emphasis: "recommended" },
+    ...secondaryActions.map((action) => ({ ...action, emphasis: "optional" })),
+  ];
 
   return (
     <div className="cancel-step cancel-rescue-step">
@@ -673,29 +689,25 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
         <h3>{rescue.title}</h3>
         <p>{rescue.body}</p>
 
-        <div className="cancel-recommended-card">
-          <span className="cancel-recommended-pill">Recommended</span>
-          <strong>{recommendedAction.label}</strong>
-          <p>{rescue.trust}</p>
-          <button
-            type="button"
-            className="cancel-save-primary"
-            onClick={() => onAction(recommendedAction)}
-          >
-            {recommendedAction.label}
-          </button>
-        </div>
-
-        <div className="cancel-rescue-actions">
-          {secondaryActions.map((action) => (
-            <button
+        <div className="cancel-rescue-action-grid">
+          {actionCards.map((action) => (
+            <article
+              className={`cancel-action-card cancel-action-card-${action.emphasis}`}
               key={`${reason.id}-rescue-${action.label}`}
-              type="button"
-              className="cancel-save-secondary"
-              onClick={() => onAction(action)}
             >
-              {action.label}
-            </button>
+              <span className="cancel-action-pill">
+                {action.emphasis === "recommended" ? "Recommended" : "Optional"}
+              </span>
+              <strong>{action.label}</strong>
+              <p>{getRescueActionCopy(action, rescue)}</p>
+              <button
+                type="button"
+                className={action.emphasis === "recommended" ? "cancel-save-primary" : "cancel-save-secondary"}
+                onClick={() => onAction(action)}
+              >
+                {action.label}
+              </button>
+            </article>
           ))}
         </div>
       </article>

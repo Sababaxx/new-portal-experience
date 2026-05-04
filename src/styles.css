@@ -676,56 +676,21 @@ button { font-family: inherit; cursor: pointer; }
   justify-items: center;
 }
 
-.cancel-progress {
-  display: grid;
-  width: min(100%, 700px);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0 0 22px;
-  padding: 0;
-  list-style: none;
-}
-
-.cancel-progress li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 10px;
-  border: 1px solid rgba(25, 59, 104, .18);
-  border-radius: 999px;
-  background: #ffffff;
-  color: var(--omni-text-3);
-  font-size: 11px;
-  line-height: 1.1;
-  font-weight: 850;
-}
-
-.cancel-progress li span {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #b9c7d8;
-}
-
-.cancel-progress li.active {
-  border-color: var(--omni-primary);
-  background: #eef4ff;
-  color: var(--omni-primary);
-}
-
-.cancel-progress li.active span {
-  background: var(--omni-primary);
+.cancel-rescue-step .cancel-step-head,
+.cancel-rescue-card,
+.cancel-rescue-footer {
+  width: min(100%, 920px);
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .cancel-rescue-step .cancel-step-head {
-  width: min(100%, 700px);
   justify-self: center;
 }
 
 .cancel-rescue-card {
-  width: min(100%, 700px);
-  padding: 24px;
-  border-width: 2px;
+  padding: clamp(22px, 3vw, 34px);
+  border-width: 1.5px;
   background:
     radial-gradient(circle at 100% 0%, rgba(38, 83, 146, .12), transparent 34%),
     linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
@@ -747,26 +712,39 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 700;
 }
 
-.cancel-recommended-card {
+.cancel-rescue-action-grid {
   display: grid;
-  gap: 10px;
-  margin-top: 20px;
-  padding: 18px;
-  border: 2px solid var(--omni-primary);
-  border-radius: 14px;
-  background:
-    radial-gradient(circle at 100% 0%, rgba(38, 83, 146, .16), transparent 30%),
-    #ffffff;
-  box-shadow: 0 12px 28px rgba(7, 19, 46, .09);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
 }
 
-.cancel-recommended-pill {
+.cancel-action-card {
+  display: flex;
+  min-height: 250px;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1.5px solid #b8cdea;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(8, 26, 51, .06);
+}
+
+.cancel-action-card-recommended {
+  border-color: #062b55;
+  background: linear-gradient(180deg, #ffffff 0%, #f2f7ff 100%);
+  box-shadow: 0 18px 38px rgba(6, 43, 85, .12);
+}
+
+.cancel-action-pill {
   display: inline-flex;
   width: fit-content;
   padding: 6px 9px;
+  border: 1px solid #b8cdea;
   border-radius: 999px;
-  background: var(--omni-primary);
-  color: #ffffff;
+  background: #edf5ff;
+  color: #062b55;
   font-size: 10px;
   line-height: 1;
   font-weight: 900;
@@ -774,46 +752,37 @@ button { font-family: inherit; cursor: pointer; }
   text-transform: uppercase;
 }
 
-.cancel-recommended-card strong {
+.cancel-action-card-optional .cancel-action-pill {
+  background: #f8fbff;
+  color: #536278;
+}
+
+.cancel-action-card strong {
   color: var(--omni-text);
   font-size: 20px;
   line-height: 1.12;
   font-weight: 900;
 }
 
-.cancel-recommended-card p {
+.cancel-action-card p {
   margin: 0;
   color: var(--omni-text-2);
   font-size: 13px;
   font-weight: 750;
 }
 
-.cancel-recommended-card button {
-  width: fit-content;
-  min-width: 210px;
-  min-height: 46px;
-  border-radius: 9px;
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.cancel-rescue-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.cancel-rescue-actions button {
-  min-height: 46px;
-  border-radius: 9px;
+.cancel-action-card .cancel-save-primary,
+.cancel-action-card .cancel-save-secondary {
+  width: 100%;
+  min-height: 52px;
+  margin-top: auto;
+  border-radius: 16px;
   font-size: 13px;
   font-weight: 850;
 }
 
 .cancel-rescue-footer {
   display: flex;
-  width: min(100%, 700px);
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -3556,31 +3525,7 @@ button { font-family: inherit; cursor: pointer; }
     font-size: 20px;
   }
 
-  .cancel-progress {
-    grid-template-columns: 1fr;
-    gap: 6px;
-    margin-bottom: 16px;
-  }
-
-  .cancel-progress li {
-    padding: 8px 10px;
-  }
-
-  .cancel-recommended-card {
-    padding: 14px;
-    border-radius: 12px;
-  }
-
-  .cancel-recommended-card strong {
-    font-size: 17px;
-  }
-
-  .cancel-recommended-card button {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .cancel-rescue-actions,
+  .cancel-rescue-action-grid,
   .cancel-confirm-actions {
     display: grid;
     grid-template-columns: 1fr;
@@ -3589,7 +3534,17 @@ button { font-family: inherit; cursor: pointer; }
     margin-top: 18px;
   }
 
-  .cancel-rescue-actions button,
+  .cancel-action-card {
+    min-height: 0;
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .cancel-action-card strong {
+    font-size: 17px;
+  }
+
+  .cancel-action-card button,
   .cancel-confirm-actions .btn {
     width: 100%;
     min-width: 0;
@@ -3597,7 +3552,9 @@ button { font-family: inherit; cursor: pointer; }
   }
 
   .cancel-rescue-footer {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     width: 100%;
     gap: 10px;
     margin-top: 18px;
@@ -3605,7 +3562,8 @@ button { font-family: inherit; cursor: pointer; }
 
   .cancel-rescue-footer .cancel-back-link,
   .cancel-rescue-footer .cancel-text-link {
-    justify-self: start;
+    justify-content: center;
+    text-align: center;
   }
 
   .cancel-flow-actions {
@@ -3729,7 +3687,6 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .cancel-step,
-.cancel-progress,
 .cancel-confirm-shell {
   max-width: 1120px;
   margin-right: auto;
@@ -3746,66 +3703,6 @@ button { font-family: inherit; cursor: pointer; }
 .cancel-confirm-step,
 .cancel-complete-step {
   max-width: 1120px;
-}
-
-.cancel-progress {
-  display: grid;
-  width: 100%;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  padding: 0;
-  margin: 8px auto 34px;
-  list-style: none;
-}
-
-.cancel-progress li {
-  display: flex;
-  min-height: 52px;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border: 1.5px solid var(--omni-c-border);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--omni-c-muted);
-  font-size: 16px;
-  font-weight: 850;
-  line-height: 1.1;
-}
-
-.cancel-progress li span {
-  display: inline-flex;
-  width: 14px;
-  height: 14px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: var(--omni-c-border);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.cancel-progress li.complete {
-  color: var(--omni-c-primary);
-}
-
-.cancel-progress li.complete span {
-  width: 18px;
-  height: 18px;
-  background: var(--omni-c-green);
-}
-
-.cancel-progress li.active {
-  border-color: var(--omni-c-primary);
-  background: #eaf2ff;
-  box-shadow: inset 0 0 0 1px rgba(0, 43, 91, 0.08);
-  color: var(--omni-c-primary);
-}
-
-.cancel-progress li.active span {
-  background: var(--omni-c-primary);
 }
 
 .cancel-step h2 {
@@ -3903,7 +3800,6 @@ button { font-family: inherit; cursor: pointer; }
   color: #c8d6e8;
 }
 
-.cancel-recommended-card,
 .cancel-save-card .cancel-insight-card,
 .cancel-save-card .cancel-product-visual,
 .cancel-rescue-card .cancel-insight-card {
@@ -3913,19 +3809,11 @@ button { font-family: inherit; cursor: pointer; }
   color: #fff;
 }
 
-.cancel-recommended-pill {
-  border-radius: 999px;
-  background: #fff;
-  color: #002b5b;
-}
-
-.cancel-recommended-card strong,
 .cancel-product-copy h3,
 .cancel-insight-card strong {
   color: #fff;
 }
 
-.cancel-recommended-card p,
 .cancel-product-copy p {
   color: #c8d6e8 !important;
 }
@@ -3956,7 +3844,6 @@ button { font-family: inherit; cursor: pointer; }
 
 .cancel-save-primary,
 .cancel-save-secondary,
-.cancel-rescue-actions button,
 .cancel-confirm-actions .btn {
   min-height: 56px;
   border-radius: 16px;
@@ -4081,17 +3968,6 @@ button { font-family: inherit; cursor: pointer; }
     height: 42px;
   }
 
-  .cancel-progress {
-    grid-template-columns: 1fr;
-    gap: 8px;
-    margin-bottom: 22px;
-  }
-
-  .cancel-progress li {
-    min-height: 42px;
-    font-size: 12px;
-  }
-
   .cancel-step h2 {
     font-size: 34px;
     line-height: 1.02;
@@ -4104,7 +3980,7 @@ button { font-family: inherit; cursor: pointer; }
   .cancel-reason-list,
   .cancel-issue-type-grid,
   .cancel-save-grid,
-  .cancel-rescue-actions,
+  .cancel-rescue-action-grid,
   .cancel-insight-grid {
     grid-template-columns: 1fr !important;
   }
@@ -4119,8 +3995,7 @@ button { font-family: inherit; cursor: pointer; }
 
   .cancel-save-grid button,
   .cancel-save-primary,
-  .cancel-save-secondary,
-  .cancel-rescue-actions button {
+  .cancel-save-secondary {
     width: 100%;
     min-height: 52px;
     border-radius: 16px;
@@ -4159,10 +4034,6 @@ button { font-family: inherit; cursor: pointer; }
   color: #081a33;
 }
 
-.cancel-progress {
-  display: none !important;
-}
-
 .cancel-modal-header {
   margin-bottom: 16px;
 }
@@ -4196,7 +4067,6 @@ button { font-family: inherit; cursor: pointer; }
   color: #081a33 !important;
 }
 
-.cancel-recommended-card,
 .cancel-save-card .cancel-insight-card,
 .cancel-save-card .cancel-product-visual,
 .cancel-rescue-card .cancel-insight-card {
@@ -4206,21 +4076,13 @@ button { font-family: inherit; cursor: pointer; }
   color: #081a33 !important;
 }
 
-.cancel-recommended-card strong,
 .cancel-product-copy h3,
 .cancel-insight-card strong {
   color: #081a33 !important;
 }
 
-.cancel-recommended-card p,
 .cancel-product-copy p {
   color: #536278 !important;
-}
-
-.cancel-recommended-pill {
-  border: 1px solid #b8cdea;
-  background: #edf5ff !important;
-  color: #062b55 !important;
 }
 
 .cancel-save-card .cancel-save-primary,
