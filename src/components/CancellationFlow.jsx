@@ -651,16 +651,32 @@ function CancellationProgress({ current = "fix" }) {
     { id: "fix", label: "Fix options" },
     { id: "final", label: "Final confirmation" },
   ];
+  const currentIndex = steps.findIndex((step) => step.id === current);
 
   return (
     <ol className="cancel-progress" aria-label="Cancellation progress">
-      {steps.map((step) => (
-        <li key={step.id} className={step.id === current ? "active" : ""}>
-          <span aria-hidden="true" />
+      {steps.map((step, index) => {
+        const state = index < currentIndex ? "complete" : step.id === current ? "active" : "idle";
+
+        return (
+        <li key={step.id} className={state}>
+          <span aria-hidden="true">{state === "complete" ? "✓" : ""}</span>
           {step.label}
         </li>
-      ))}
+        );
+      })}
     </ol>
+  );
+}
+
+function CancellationModalHeader({ onClose }) {
+  return (
+    <div className="cancel-modal-header">
+      <div className="cancel-modal-logo" aria-label="OMNI">
+        <img src="/assets/omni-logo-dark.svg" alt="OMNI" />
+      </div>
+      <button className="cancel-flow-close" type="button" onClick={onClose} aria-label="Close cancellation flow">×</button>
+    </div>
   );
 }
 
@@ -670,7 +686,6 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
 
   return (
     <div className="cancel-step cancel-rescue-step">
-      <CancellationProgress current="fix" />
       <div className="cancel-step-head">
         <span className="cancel-kicker">Guided fix</span>
         <h2>Give us one chance to make this right</h2>
@@ -800,7 +815,7 @@ function CancellationFinalConfirm({ reason, onBack, onKeep, onConfirm }) {
 
 function CancellationSavedScreen({ message, onDone }) {
   return (
-    <div className="cancel-step cancel-complete-step">
+    <div className="cancel-step cancel-complete-step cancel-complete-step-saved">
       <span className="cancel-kicker">Saved</span>
       <h2>{message}</h2>
       <p>Your subscription stays active. You can return to the overview and keep managing your order.</p>
@@ -811,7 +826,7 @@ function CancellationSavedScreen({ message, onDone }) {
 
 function CancellationCompleteScreen({ onDone }) {
   return (
-    <div className="cancel-step cancel-complete-step">
+    <div className="cancel-step cancel-complete-step cancel-complete-step-cancelled">
       <span className="cancel-kicker">Cancelled</span>
       <h2>Your subscription has been cancelled.</h2>
       <p>You’ll receive a confirmation email with the cancellation details.</p>
@@ -913,6 +928,8 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
     closeFlow({ skipAbandonedEvent: true });
     onKept();
   };
+  const progressStep = step === "reason" ? "reason" : step === "confirm" ? "final" : "fix";
+  const showProgress = !submitted && !savedMessage;
 
   return (
     <div className="cancel-flow-backdrop" role="presentation" onClick={handleBackdrop}>
@@ -923,7 +940,8 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
         aria-label="Cancel subscription flow"
         onClick={(event) => event.stopPropagation()}
       >
-        <button className="cancel-flow-close" type="button" onClick={closeFlow} aria-label="Close cancellation flow">x</button>
+        <CancellationModalHeader onClose={closeFlow} />
+        {showProgress && <CancellationProgress current={progressStep} />}
 
         {!submitted && !savedMessage && step === "reason" && (
           <CancellationReasonSelect
