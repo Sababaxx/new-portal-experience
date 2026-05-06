@@ -51,6 +51,11 @@ export default function SubscriptionDetailPage({ activeView = "manage", onNaviga
           <PortalNav activeView={activeView} onNavigate={onNavigate} onLogout={onLogout} />
           <main className="portal-main">
             <div className="skip-success-screen">
+              <div className="skip-success-check" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                  <path d="M4.5 11.5L9 16L17.5 7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
               <span className="cancel-kicker">Saved</span>
               <h2>Your order has been skipped</h2>
               <p>Your subscription stays active.</p>

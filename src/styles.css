@@ -4289,6 +4289,18 @@ button { font-family: inherit; cursor: pointer; }
   gap: 10px;
 }
 
+.skip-success-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--omni-active-green);
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
 .skip-success-screen h2 {
   margin: 0;
   font-size: 32px;
@@ -4302,6 +4314,13 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--omni-text-2);
   font-size: 15px;
   font-weight: 650;
+}
+
+.cancel-rescue-pause-btn {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  font-size: 14px;
 }
 
 /* ── Claim Free Gift card ─────────────────────────────────────────────────── */

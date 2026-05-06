@@ -666,77 +666,11 @@ function CancellationBranchScreen({ branch, reason, preselect, onBack, onDone, o
 }
 
 // ─── Step 4: Rescue page ("Choose what you'd like to do next") ──────────────
-function getRescueActions(reason) {
-  if (reason.id === "product-issue") {
-    return [
-      { label: "Contact support", action: "support" },
-      { label: "Pause subscription", branch: "pause" },
-    ];
-  }
-  if (["stocked", "fast"].includes(reason.id)) {
-    return [
-      { label: "Switch to 12 week delivery", branch: "cadence", preselect: "Every 12 weeks" },
-      { label: "Skip next order", branch: "skip" },
-    ];
-  }
-  if (["flavor-texture", "sugar", "digestion"].includes(reason.id)) {
-    return [
-      { label: "Pause subscription", branch: "pause" },
-      { label: "Contact support", action: "support" },
-    ];
-  }
-  return [
-    { label: "Pause subscription", branch: "pause" },
-    { label: "Skip next order", branch: "skip" },
-  ];
-}
-
-function getRescueActionCopy(action) {
-  const label = action.label.toLowerCase();
-  if (label.includes("support")) return "Send this to support so the team can help before you decide.";
-  if (label.includes("pause")) return "Pause deliveries and keep your account open until you are ready.";
-  if (label.includes("skip")) return "Skip the next shipment while keeping the subscription active.";
-  if (label.includes("12 week")) return "Stretch future deliveries so your next order matches your pace.";
-  if (label.includes("8 week")) return "Slow the cadence while keeping your member setup active.";
-  return "Keep control of your subscription without closing the account.";
-}
-
+// Rescue page always shows the offer banner + claim CTA + pause secondary
 function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
-  const isOfferMode = Boolean(reason.useOfferMode);
-
-  // ── Offer mode (expensive, alternative) ───────────────────────────────────
-  if (isOfferMode) {
-    const bannerUrl = getOfferBanner(subscription.pouchCount || 3, subscription.orderCount || 2);
-    const offerCta = reason.ctas.find((c) => c.branch === "savings") || reason.ctas[0];
-    return (
-      <div className="cancel-step cancel-rescue-step">
-        <div className="cancel-step-back-row">
-          <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
-        </div>
-        <div className="cancel-step-head cancel-stacked-head">
-          <span className="cancel-kicker">Account options</span>
-          <h2>Choose what you'd like to do next</h2>
-        </div>
-        <div className="cancel-rescue-offer-panel">
-          <img src={bannerUrl} alt="Member offer" className="cancel-rescue-offer-img" />
-          <button
-            type="button"
-            className="cancel-save-primary cancel-rescue-offer-cta"
-            onClick={() => onAction(offerCta)}
-          >
-            {offerCta.label}
-          </button>
-        </div>
-        <div className="cancel-rescue-footer cancel-rescue-footer-single">
-          <button type="button" className="cancel-text-link" onClick={onContinue}>Continue to final cancellation</button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Action mode ─────────────────────────────────────────────────────────
-  const rescueActions = getRescueActions(reason);
-  const [recommendedAction, optionalAction] = rescueActions;
+  const bannerUrl = getOfferBanner(subscription.pouchCount || 3, subscription.orderCount || 2);
+  const offerAction = { label: "Claim this offer", branch: "savings", preselect: "50% off next 3 orders" };
+  const pauseAction = { label: "Pause subscription", branch: "pause" };
 
   return (
     <div className="cancel-step cancel-rescue-step">
@@ -746,39 +680,25 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
       <div className="cancel-step-head cancel-stacked-head">
         <span className="cancel-kicker">Account options</span>
         <h2>Choose what you'd like to do next</h2>
-        <p>Here's the option that best matches what you selected.</p>
       </div>
 
-      <article className={`cancel-rescue-card cancel-treatment-${reason.treatment}`}>
-        <div className="cancel-rescue-action-grid">
-          {recommendedAction && (
-            <article className="cancel-action-card cancel-action-card-recommended">
-              <strong>{recommendedAction.label}</strong>
-              <p>{getRescueActionCopy(recommendedAction)}</p>
-              <button
-                type="button"
-                className="cancel-save-primary"
-                onClick={() => onAction(recommendedAction)}
-              >
-                {recommendedAction.label}
-              </button>
-            </article>
-          )}
-          {optionalAction && (
-            <article className="cancel-action-card cancel-action-card-optional">
-              <strong>{optionalAction.label}</strong>
-              <p>{getRescueActionCopy(optionalAction)}</p>
-              <button
-                type="button"
-                className="cancel-save-secondary"
-                onClick={() => onAction(optionalAction)}
-              >
-                {optionalAction.label}
-              </button>
-            </article>
-          )}
-        </div>
-      </article>
+      <div className="cancel-rescue-offer-panel">
+        <img src={bannerUrl} alt="Member offer — 50% off next order + free electrolytes" className="cancel-rescue-offer-img" />
+        <button
+          type="button"
+          className="cancel-save-primary cancel-rescue-offer-cta"
+          onClick={() => onAction(offerAction)}
+        >
+          Claim this offer
+        </button>
+        <button
+          type="button"
+          className="cancel-save-secondary cancel-rescue-pause-btn"
+          onClick={() => onAction(pauseAction)}
+        >
+          Pause subscription instead
+        </button>
+      </div>
 
       <div className="cancel-rescue-footer cancel-rescue-footer-single">
         <button type="button" className="cancel-text-link" onClick={onContinue}>Continue to final cancellation</button>
