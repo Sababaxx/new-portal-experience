@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import ActionModal from "./ActionModal.jsx";
 
-const creatineVariants = [
-  { label: "1x / Peach", product: "OMNI Creatine Gummies", flavor: "Peach", pack: "1 pouch / 30 servings", price: 42, image: "/assets/omni-product-peach.png" },
-  { label: "1x / Watermelon", product: "OMNI Creatine Gummies", flavor: "Watermelon", pack: "1 pouch / 30 servings", price: 42, image: "/assets/omni-product-watermelon.png" },
-  { label: "2x / Peach", product: "Two Pouches", flavor: "Peach", pack: "2 pouches / 60 servings", price: 79, image: "/assets/omni-product-peach.png" },
-  { label: "2x / Watermelon", product: "Two Pouches", flavor: "Watermelon", pack: "2 pouches / 60 servings", price: 79, image: "/assets/omni-product-watermelon.png" },
-  { label: "3x / Peach", product: "Three Pouches", flavor: "Peach", pack: "3 pouches / 90 servings", price: 115, image: "/assets/omni-product-peach.png" },
-  { label: "3x / Watermelon", product: "Three Pouches", flavor: "Watermelon", pack: "3 pouches / 90 servings", price: 115, image: "/assets/omni-product-watermelon.png" },
-];
 
 const recs = [
   {
@@ -43,51 +35,36 @@ const recs = [
 ];
 
 export default function ProductWorkspace({ compact = false }) {
-  const [qty, setQty] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState("3x / Peach");
   const [recSelections, setRecSelections] = useState(() => Object.fromEntries(recs.map((item) => [item.name, item.options[0].label])));
   const [modal, setModal] = useState(null);
-  const currentProduct = creatineVariants.find((variant) => variant.label === selectedVariant) || creatineVariants[0];
-  const subtotal = currentProduct.price * qty;
+  const [giftClaimed, setGiftClaimed] = useState(false);
+
+  const subtotal = 115;
   const shipping = 8;
   const total = subtotal + shipping;
+
+  const handleClaimGift = () => {
+    // Placeholder: wire to real Loop gift-claim action when available
+    setGiftClaimed(true);
+    setModal("Gift claimed");
+  };
 
   return (
     <section className={`workspace-grid ${compact ? "workspace-grid-compact" : ""}`} aria-label="Subscription product workspace">
       <div className="workspace-left">
-        <h2 className="workspace-title">Products</h2>
-        <div className="workspace-card product-builder-card">
-          <div className="current-product-row">
-            <div className="workspace-product-image">
-              <img src={currentProduct.image} alt={`${currentProduct.flavor} ${currentProduct.product}`} />
-            </div>
-            <div className="workspace-product-copy">
-              <div className="workspace-product-head">
-                <div>
-                  <h3>{currentProduct.product}</h3>
-                <p>{currentProduct.flavor} · {currentProduct.pack}</p>
-                </div>
-                <strong>${subtotal.toFixed(2)}</strong>
-              </div>
-              <div className="workspace-product-actions">
-                <button type="button" aria-label="Decrease quantity" onClick={() => setQty((currentQty) => Math.max(1, currentQty - 1))}>−</button>
-                <span>{qty}</span>
-                <button type="button" aria-label="Increase quantity" onClick={() => setQty((currentQty) => currentQty + 1)}>+</button>
-                <select value={selectedVariant} onChange={(event) => setSelectedVariant(event.target.value)}>
-                  {creatineVariants.map((variant) => (
-                    <option key={variant.label}>{variant.label}</option>
-                  ))}
-                </select>
-                <button className="swap-mini" type="button" onClick={() => setModal("Swap flavor")}>Swap</button>
-              </div>
-            </div>
+        <h2 className="workspace-title">Claim Free Gift</h2>
+        <div className="workspace-card claim-free-gift-card">
+          <img src="/assets/omni-claim-free-gift.png" alt="Claim your free gift with your next OMNI order" />
+          <div className="claim-free-gift-actions">
+            {giftClaimed ? (
+              <span className="claim-gift-confirmed">Gift added to your next order</span>
+            ) : (
+              <button type="button" className="claim-gift-btn" onClick={handleClaimGift}>
+                Claim free gift for next order
+              </button>
+            )}
           </div>
-
-          <button type="button" className="add-product-wide" onClick={() => setModal("Add product")}>+ Add product</button>
-          <p className="eligible-note">Add 1 more item to get 5% off subscription! <button type="button">See eligible items →</button></p>
         </div>
-
-        <div className="saved-banner">You’ve saved with your subscription: <strong>$80</strong></div>
 
         <h2 className="workspace-title">Shipping information</h2>
         <div className="workspace-card info-workspace-card">
@@ -149,14 +126,13 @@ export default function ProductWorkspace({ compact = false }) {
       </aside>
       {modal && (
         <ActionModal title={modal} onClose={() => setModal(null)}>
-          <div className="product-modal-preview">
-            <img src={currentProduct.image} alt={`${currentProduct.flavor} ${currentProduct.product}`} />
+          {modal === "Gift claimed" && (
             <div>
-              {modal === "Swap flavor" && <p>Swap the current gummies to another OMNI flavor for the next shipment. Your selected quantity stays at {qty}.</p>}
-              {modal === "Add product" && <p>Add another OMNI product to this subscription order and review savings before checkout.</p>}
-              {modal === "Add to next order" && <p>Add the selected recommended OMNI product to the upcoming shipment. Pricing and flavor are confirmed before final checkout.</p>}
+              <p>Your free gift has been added to your next OMNI order. It will ship with your scheduled delivery.</p>
+              <p className="modal-note">Prototype only: wire to the real Loop gift-claim endpoint when available.</p>
             </div>
-          </div>
+          )}
+          {modal === "Add to next order" && <p>Add the selected recommended OMNI product to the upcoming shipment. Pricing and flavor are confirmed before final checkout.</p>}
         </ActionModal>
       )}
     </section>
