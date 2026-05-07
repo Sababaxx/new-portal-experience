@@ -4452,23 +4452,24 @@ button { font-family: inherit; cursor: pointer; }
 .home-offer-card-img {
   width: 100%;
   overflow: hidden;
-  background: #f1f5f9;
+  background: #0d1e39;
   line-height: 0;
+  /* aspect-ratio drives height — scales cleanly at every viewport width */
 }
 
 .home-offer-card-hero .home-offer-card-img {
-  height: 210px;
+  aspect-ratio: 2.6 / 1;
 }
 
 .home-offer-card-compact .home-offer-card-img {
-  height: 165px;
+  aspect-ratio: 4 / 3;
 }
 
 .home-offer-card-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center center;
+  object-position: center 30%;
   display: block;
   transition: transform .3s ease;
 }
@@ -4703,12 +4704,13 @@ button { font-family: inherit; cursor: pointer; }
     grid-column: auto;
   }
 
+  /* aspect-ratio already scales naturally on mobile — no height override needed */
   .home-offer-card-hero .home-offer-card-img {
-    height: 185px;
+    aspect-ratio: 2.2 / 1;
   }
 
   .home-offer-card-compact .home-offer-card-img {
-    height: 155px;
+    aspect-ratio: 1 / 1;
   }
 
   .swap-flavor-btn img {
