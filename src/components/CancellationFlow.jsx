@@ -411,7 +411,7 @@ function CancellationModalHeader({ onClose }) {
   return (
     <div className="cancel-modal-header">
       <div className="cancel-modal-logo" aria-label="OMNI">
-        <img src="/assets/omni-logo-dark.svg" alt="OMNI" />
+        <img src="/assets/omni-logo-white.svg" alt="OMNI" />
       </div>
       <button className="cancel-flow-close" type="button" onClick={onClose} aria-label="Close cancellation flow">×</button>
     </div>

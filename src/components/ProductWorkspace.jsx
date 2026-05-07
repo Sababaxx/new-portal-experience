@@ -55,15 +55,20 @@ export default function ProductWorkspace({ compact = false }) {
     <section className={`workspace-grid ${compact ? "workspace-grid-compact" : ""}`} aria-label="Subscription product workspace">
       <div className="workspace-left">
         <h2 className="workspace-title">Claim Free Gift</h2>
-        <div className="workspace-card claim-free-gift-card">
+        <div
+          className={`claim-free-gift-card${giftClaimed ? " gift-claimed" : ""}`}
+          role={!giftClaimed ? "button" : undefined}
+          tabIndex={!giftClaimed ? 0 : undefined}
+          onClick={!giftClaimed ? handleClaimGift : undefined}
+          onKeyDown={!giftClaimed ? (e) => e.key === "Enter" && handleClaimGift() : undefined}
+          aria-label={!giftClaimed ? "Claim your free gift" : undefined}
+        >
           <img src="/assets/omni-claim-free-gift.png" alt="Claim your free gift with your next OMNI order" />
-          <div className="claim-free-gift-actions">
+          <div className="claim-free-gift-overlay">
             {giftClaimed ? (
-              <span className="claim-gift-confirmed">Gift added to your next order</span>
+              <span className="claim-gift-confirmed">✓ Gift added to your next order</span>
             ) : (
-              <button type="button" className="claim-gift-btn" onClick={handleClaimGift}>
-                Claim free gift for next order
-              </button>
+              <span className="claim-gift-cta-label">Claim Free Gift →</span>
             )}
           </div>
         </div>

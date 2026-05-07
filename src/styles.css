@@ -4729,3 +4729,276 @@ button { font-family: inherit; cursor: pointer; }
     width: 100%;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK PORTAL THEME — header, shell, nav, manage-hero, cancel flow
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Header: dark navy ───────────────────────────────────────────────────── */
+.omni-header {
+  background: #07132e !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+.header-shop {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+.header-icons {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ── Portal shell: deep navy background ─────────────────────────────────── */
+.portal-shell-dashboard {
+  background: #07132e !important;
+}
+
+/* ── Side nav on dark shell ─────────────────────────────────────────────── */
+.portal-side-nav a {
+  color: rgba(255, 255, 255, 0.55) !important;
+  text-decoration: none !important;
+}
+.portal-side-nav a:hover {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+.portal-side-nav a.active {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+/* ── Manage-hero: white card so buttons stay dark-on-white ──────────────── */
+.manage-hero {
+  background: #ffffff !important;
+  border: 1.5px solid var(--omni-card-border) !important;
+  border-radius: 14px !important;
+  padding: 20px 22px 18px !important;
+  margin-bottom: 24px !important;
+}
+
+/* ── workspace-title headings sit on dark shell → white ────────────────── */
+.portal-shell-dashboard .workspace-title {
+  color: #ffffff !important;
+}
+
+/* ── Skip-success screen on dark shell ──────────────────────────────────── */
+.skip-success-screen h2,
+.portal-shell-dashboard .skip-success-screen p {
+  color: #ffffff !important;
+}
+
+/* ── Cancel flow: dark navy modal ───────────────────────────────────────── */
+.cancel-flow-panel {
+  background: linear-gradient(160deg, #0c1d40 0%, #07132e 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* cancel headings on dark flow */
+.cancel-flow-panel h2,
+.cancel-flow-panel h3,
+.cancel-flow-panel .cancel-step h2,
+.cancel-flow-panel .cancel-save-card h3,
+.cancel-flow-panel .cancel-confirm-card h3 {
+  color: #ffffff !important;
+}
+
+.cancel-flow-panel p,
+.cancel-flow-panel .cancel-step p,
+.cancel-flow-panel .cancel-save-card p,
+.cancel-flow-panel .cancel-final-subcopy {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.cancel-flow-panel .cancel-kicker,
+.cancel-flow-panel .cancel-step-head .cancel-kicker,
+.cancel-flow-panel .cancel-step-meta .cancel-kicker {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* reason select buttons on dark bg */
+.cancel-flow-panel .cancel-reason-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.cancel-flow-panel .cancel-reason-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.36) !important;
+  color: #ffffff !important;
+}
+.cancel-flow-panel .cancel-reason-btn.selected {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  color: #ffffff !important;
+}
+
+/* save/rescue cards on dark bg */
+.cancel-flow-panel .cancel-save-card,
+.cancel-flow-panel .cancel-rescue-card,
+.cancel-flow-panel .cancel-confirm-card,
+.cancel-flow-panel .cancel-branch-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: none !important;
+}
+
+/* insight cards on dark bg */
+.cancel-flow-panel .cancel-insight-card {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+.cancel-flow-panel .cancel-insight-card strong,
+.cancel-flow-panel .cancel-insight-card span {
+  color: #ffffff !important;
+}
+
+/* PRIMARY button on dark cancel flow → white button */
+.cancel-flow-panel .cancel-save-primary,
+.cancel-flow-panel .cancel-confirm-actions .btn-primary,
+.cancel-rescue-primary-btn {
+  background: #ffffff !important;
+  color: #07132e !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.14) !important;
+}
+.cancel-flow-panel .cancel-save-primary:hover,
+.cancel-rescue-primary-btn:hover {
+  background: rgba(255, 255, 255, 0.92) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* SECONDARY button on dark cancel flow → outlined white */
+.cancel-flow-panel .cancel-save-secondary,
+.cancel-flow-panel .cancel-confirm-actions .btn-outline,
+.cancel-rescue-secondary-btn {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+.cancel-flow-panel .cancel-save-secondary:hover,
+.cancel-rescue-secondary-btn:hover {
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+/* text links on dark bg */
+.cancel-flow-panel .cancel-text-link,
+.cancel-flow-panel .cancel-back-link {
+  color: rgba(255, 255, 255, 0.42) !important;
+}
+.cancel-flow-panel .cancel-text-link:hover,
+.cancel-flow-panel .cancel-back-link:hover {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+/* sub-reason grid pills on dark bg */
+.cancel-flow-panel .cancel-sub-reason-grid button {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+.cancel-flow-panel .cancel-sub-reason-grid button:hover,
+.cancel-flow-panel .cancel-sub-reason-grid button.selected {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.48) !important;
+  color: #fff !important;
+}
+
+/* close button on dark bg */
+.cancel-flow-panel .cancel-flow-close {
+  color: rgba(255, 255, 255, 0.55) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+.cancel-flow-panel .cancel-flow-close:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* rescue step on dark bg */
+.cancel-rescue-headline h2,
+.cancel-rescue-subtext {
+  color: #fff !important;
+}
+.cancel-rescue-subtext {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+.cancel-rescue-eyebrow {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.cancel-rescue-img-wrap {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ── Claim Free Gift: image-first card with overlay CTA ─────────────────── */
+.claim-free-gift-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(7, 19, 46, 0.14) !important;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 22px;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.claim-free-gift-card:not(.gift-claimed):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(7, 19, 46, 0.16);
+}
+.claim-free-gift-card img {
+  width: 100%;
+  display: block;
+  border-radius: 0;
+}
+.claim-free-gift-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 32px 18px 18px;
+  background: linear-gradient(to top, rgba(7, 19, 46, 0.82) 0%, transparent 100%);
+  display: flex;
+  align-items: flex-end;
+}
+.claim-gift-cta-label {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.claim-free-gift-card .claim-gift-confirmed {
+  color: #4ade80;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* ── Home offer card alignment: equal-height bottom row ─────────────────── */
+.home-offers-grid {
+  align-items: stretch;
+}
+.home-offer-card {
+  display: flex;
+  flex-direction: column;
+}
+.home-offer-card-compact {
+  height: 100%;
+}
+.home-offer-card-body {
+  justify-content: space-between;
+  flex: 1;
+}
+
+@media (max-width: 540px) {
+  .manage-hero {
+    padding: 14px !important;
+    border-radius: 10px !important;
+  }
+  .portal-side-nav a {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .portal-side-nav a.active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
