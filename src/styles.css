@@ -269,7 +269,7 @@ button { font-family: inherit; cursor: pointer; }
   position: relative;
   width: 100%;
   overflow: hidden;
-  border: 1px solid #07132e;
+  border: 1px solid #102347;
   border-radius: 10px;
   background: #ffffff;
   line-height: 0;
@@ -1392,7 +1392,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .portal-offer-intro { margin-bottom: 16px; padding: 0 2px; }
 .portal-offer-stack { gap: 20px; }
-.portal-offer-block { border-color: #07132e; border-radius: 10px; }
+.portal-offer-block { border-color: #102347; border-radius: 10px; }
 .offer-hotspot {
   border: 1px solid transparent;
   transition: background .16s ease, box-shadow .16s ease, border-color .16s ease, transform .16s ease;
@@ -1471,7 +1471,7 @@ button { font-family: inherit; cursor: pointer; }
 
 .portal-offer-block {
   width: 100%;
-  border: 1px solid #07132e;
+  border: 1px solid #102347;
   border-radius: 9px;
   overflow: hidden;
   background: #ffffff;
@@ -1962,7 +1962,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .portal-offer-block {
-  border: 1.5px solid #07132e;
+  border: 1.5px solid #102347;
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
@@ -4738,7 +4738,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ── Header: dark navy, full-brightness text ─────────────────────────────── */
 .omni-header {
-  background: #07132e !important;
+  background: #102347 !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 .header-shop {
@@ -4750,7 +4750,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ── Footer: dark to match portal shell ─────────────────────────────────── */
 .omni-footer {
-  background: #07132e !important;
+  background: #102347 !important;
   border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 .footer-newsletter h4,
@@ -4770,7 +4770,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .footer-newsletter button {
   background: #ffffff !important;
-  color: #07132e !important;
+  color: #102347 !important;
 }
 .footer-col a,
 .footer-bottom .right-links a {
@@ -4803,16 +4803,16 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ── Portal shell: deep navy background ─────────────────────────────────── */
 .portal-shell-dashboard {
-  background: #07132e !important;
+  background: #102347 !important;
 }
 
 /* ── Side nav on dark shell ─────────────────────────────────────────────── */
 .portal-side-nav a {
-  color: rgba(255, 255, 255, 0.55) !important;
+  color: rgba(255, 255, 255, 0.78) !important;
   text-decoration: none !important;
 }
 .portal-side-nav a:hover {
-  color: rgba(255, 255, 255, 0.9) !important;
+  color: #ffffff !important;
 }
 .portal-side-nav a.active {
   color: #ffffff !important;
@@ -4841,7 +4841,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ── Cancel flow: dark navy modal ───────────────────────────────────────── */
 .cancel-flow-panel {
-  background: linear-gradient(160deg, #0c1d40 0%, #07132e 100%) !important;
+  background: linear-gradient(160deg, #14294f 0%, #102347 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   color: #ffffff !important;
 }
@@ -4912,7 +4912,7 @@ button { font-family: inherit; cursor: pointer; }
 .cancel-flow-panel .cancel-confirm-actions .btn-primary,
 .cancel-rescue-primary-btn {
   background: #ffffff !important;
-  color: #07132e !important;
+  color: #102347 !important;
   border-color: #ffffff !important;
   box-shadow: 0 4px 18px rgba(255, 255, 255, 0.14) !important;
 }
