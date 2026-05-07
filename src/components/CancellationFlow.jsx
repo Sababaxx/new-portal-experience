@@ -665,8 +665,8 @@ function CancellationBranchScreen({ branch, reason, preselect, onBack, onDone, o
   );
 }
 
-// ─── Step 4: Rescue page ("Choose what you'd like to do next") ──────────────
-// Rescue page always shows the offer banner + claim CTA + pause secondary
+// ─── Step 4: Rescue page — premium redesign ──────────────────────────────────
+// Always shows offer banner for ALL cancellation reasons with premium layout
 function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
   const bannerUrl = getOfferBanner(subscription.pouchCount || 3, subscription.orderCount || 2);
   const offerAction = { label: "Claim this offer", branch: "savings", preselect: "50% off next 3 orders" };
@@ -675,33 +675,40 @@ function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
   return (
     <div className="cancel-step cancel-rescue-step">
       <div className="cancel-step-back-row">
-        <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
-      </div>
-      <div className="cancel-step-head cancel-stacked-head">
-        <span className="cancel-kicker">Account options</span>
-        <h2>Choose what you'd like to do next</h2>
+        <button type="button" className="cancel-back-link" onClick={onBack}>← Back</button>
       </div>
 
-      <div className="cancel-rescue-offer-panel">
-        <img src={bannerUrl} alt="Member offer — 50% off next order + free electrolytes" className="cancel-rescue-offer-img" />
-        <button
-          type="button"
-          className="cancel-save-primary cancel-rescue-offer-cta"
-          onClick={() => onAction(offerAction)}
-        >
-          Claim this offer
-        </button>
-        <button
-          type="button"
-          className="cancel-save-secondary cancel-rescue-pause-btn"
-          onClick={() => onAction(pauseAction)}
-        >
-          Pause subscription instead
-        </button>
+      <div className="cancel-rescue-premium">
+        <div className="cancel-rescue-headline">
+          <span className="cancel-rescue-eyebrow">Member exclusive</span>
+          <h2>One offer before you go</h2>
+          <p className="cancel-rescue-subtext">Reserved for active subscribers only. Once you cancel, this offer is gone.</p>
+        </div>
+
+        <div className="cancel-rescue-img-wrap">
+          <img src={bannerUrl} alt="Member exclusive offer — 50% off next 3 orders" className="cancel-rescue-offer-img" />
+        </div>
+
+        <div className="cancel-rescue-cta-block">
+          <button
+            type="button"
+            className="cancel-rescue-primary-btn"
+            onClick={() => onAction(offerAction)}
+          >
+            Claim this offer
+          </button>
+          <button
+            type="button"
+            className="cancel-rescue-secondary-btn"
+            onClick={() => onAction(pauseAction)}
+          >
+            Pause my subscription instead
+          </button>
+        </div>
       </div>
 
       <div className="cancel-rescue-footer cancel-rescue-footer-single">
-        <button type="button" className="cancel-text-link" onClick={onContinue}>Continue to final cancellation</button>
+        <button type="button" className="cancel-text-link" onClick={onContinue}>No thanks — continue to cancellation</button>
       </div>
     </div>
   );

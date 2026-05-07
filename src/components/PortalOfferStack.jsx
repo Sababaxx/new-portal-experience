@@ -127,6 +127,39 @@ export default function PortalOfferStack({
     </div>
   );
 
+  // ── Home variant: premium offer cards with image + text label ──────────────
+  if (variant === "home") {
+    return (
+      <section className="home-offers-section" aria-label="Member offers">
+        <div className="home-offers-grid">
+          {homeOffers.map((offer, index) => (
+            <button
+              key={offer.id}
+              type="button"
+              className={`home-offer-card${index === 0 ? " home-offer-card-hero" : " home-offer-card-compact"}`}
+              onClick={() => setActiveOffer(offer)}
+            >
+              <div className="home-offer-card-img">
+                <img src={offer.imageUrl} alt={offer.alt} draggable="false" />
+              </div>
+              <div className="home-offer-card-body">
+                <span className="home-offer-card-eyebrow">{offer.offerCopy.eyebrow}</span>
+                <span className="home-offer-card-title">{offer.modalTitle}</span>
+                <span className="home-offer-card-cta">{offer.actionLabel} →</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {activeOffer && (
+          <ActionModal title={activeOffer.modalTitle} onClose={() => setActiveOffer(null)} actionLabel={activeOffer.actionLabel}>
+            {renderOfferCopy(activeOffer)}
+          </ActionModal>
+        )}
+      </section>
+    );
+  }
+
   return (
     <section className={`portal-offer-panel portal-offer-panel-${variant} ${compact ? "portal-offer-panel-compact" : ""}`} aria-label="Member offer blocks">
       {showIntro && (

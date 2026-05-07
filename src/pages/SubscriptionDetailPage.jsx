@@ -17,6 +17,7 @@ export default function SubscriptionDetailPage({ activeView = "manage", onNaviga
   const [isCancellationOpen, setIsCancellationOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [skipSuccess, setSkipSuccess] = useState(false);
+  const [skipConfirm, setSkipConfirm] = useState(false);
   const [nextOrderDate, setNextOrderDate] = useState("2026-06-26");
 
   const openModal = (title) => {
@@ -40,6 +41,12 @@ export default function SubscriptionDetailPage({ activeView = "manage", onNaviga
   };
 
   const handleSkip = () => {
+    setMoreOpen(false);
+    setSkipConfirm(true);
+  };
+
+  const confirmSkip = () => {
+    setSkipConfirm(false);
     setSkipSuccess(true);
   };
 
@@ -168,6 +175,15 @@ export default function SubscriptionDetailPage({ activeView = "manage", onNaviga
         onClose={() => setIsCancellationOpen(false)}
         onKept={() => showToast("Subscription kept active.")}
       />
+      {skipConfirm && (
+        <ActionModal title="Skip this order?" onClose={() => setSkipConfirm(false)}>
+          <p>Your next order scheduled for <strong>{displayDate}</strong> will be skipped. Your subscription stays active — the order after that will ship on the usual schedule.</p>
+          <div className="modal-actions modal-actions-row">
+            <Button variant="primary" onClick={confirmSkip}>Yes, skip it</Button>
+            <Button variant="outline" onClick={() => setSkipConfirm(false)}>Keep my order</Button>
+          </div>
+        </ActionModal>
+      )}
       {toastMessage && <div className="portal-toast" role="status">{toastMessage}</div>}
     </div>
   );

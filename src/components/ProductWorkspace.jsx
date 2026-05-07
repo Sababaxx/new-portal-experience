@@ -38,6 +38,8 @@ export default function ProductWorkspace({ compact = false }) {
   const [recSelections, setRecSelections] = useState(() => Object.fromEntries(recs.map((item) => [item.name, item.options[0].label])));
   const [modal, setModal] = useState(null);
   const [giftClaimed, setGiftClaimed] = useState(false);
+  const [selectedFlavor, setSelectedFlavor] = useState("peach");
+  const [flavorSaved, setFlavorSaved] = useState(false);
 
   const subtotal = 115;
   const shipping = 8;
@@ -61,6 +63,38 @@ export default function ProductWorkspace({ compact = false }) {
             ) : (
               <button type="button" className="claim-gift-btn" onClick={handleClaimGift}>
                 Claim free gift for next order
+              </button>
+            )}
+          </div>
+        </div>
+
+        <h2 className="workspace-title">Swap Flavor</h2>
+        <div className="workspace-card swap-flavor-card">
+          <p className="swap-flavor-desc">Change your current gummy flavor. Takes effect on your next order.</p>
+          <div className="swap-flavor-options">
+            <button
+              type="button"
+              className={`swap-flavor-btn${selectedFlavor === "peach" ? " selected" : ""}`}
+              onClick={() => { setSelectedFlavor("peach"); setFlavorSaved(false); }}
+            >
+              <img src="/assets/omni-product-peach.png" alt="Peach gummies" />
+              <span>Peach</span>
+            </button>
+            <button
+              type="button"
+              className={`swap-flavor-btn${selectedFlavor === "watermelon" ? " selected" : ""}`}
+              onClick={() => { setSelectedFlavor("watermelon"); setFlavorSaved(false); }}
+            >
+              <img src="/assets/omni-product-watermelon.png" alt="Watermelon gummies" />
+              <span>Watermelon</span>
+            </button>
+          </div>
+          <div className="swap-flavor-action">
+            {flavorSaved ? (
+              <span className="claim-gift-confirmed">Flavor updated — applies to your next order</span>
+            ) : (
+              <button type="button" className="claim-gift-btn" onClick={() => setFlavorSaved(true)}>
+                Confirm swap to {selectedFlavor === "peach" ? "Peach" : "Watermelon"}
               </button>
             )}
           </div>
