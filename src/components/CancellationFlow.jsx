@@ -1,9 +1,45 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Button from "./Button.jsx";
+import { subscription } from "../data/subscription.js";
 
 const SUPPORT_URL = "https://contact.gorgias.help/en-US/forms/0c4rzba9";
-const FINAL_STEP_LABEL = "Review final step";
+const FOUNDER_SUPPORT_URL = "https://contact.gorgias.help/en-US/forms/0c4rzba9"; // placeholder — wire to real founder contact URL
+const SCIENCE_PAGE_URL = "#science"; // placeholder — wire to real science/why-OMNI page
+const FINAL_STEP_LABEL = "Continue to cancel";
 
+// ─── Editable offer banner mapping ──────────────────────────────────────────
+// Key format: `${pouchCount}-${tier}`. Tiers: low (1–3 orders) | mid (4–5) | high (5+)
+const OFFER_BANNER_MAP = {
+  "1-low":  "/assets/omni-offer-1x-21.jpg",
+  "1-mid":  "/assets/omni-offer-1x-27.jpg",
+  "1-high": "/assets/omni-offer-1x-31.jpg",
+  "2-low":  "/assets/omni-offer-2x-39.jpg",
+  "2-mid":  "/assets/omni-offer-2x-51.jpg",
+  "2-high": "/assets/omni-offer-2x-59.jpg",
+  "3-low":  "/assets/omni-offer-3x-57.jpg",
+  "3-mid":  "/assets/omni-offer-3x-74.jpg",
+  "3-high": "/assets/omni-offer-3x-86.jpg",
+};
+
+// ─── Editable product swap mapping ──────────────────────────────────────────
+// Gummy subscriptions (peach / watermelon) map to OMNI Electrolytes variants
+const PRODUCT_SWAP_MAP = {
+  peach: { id: "electrolytes-peach", title: "OMNI Electrolytes Peach", image: "/assets/omni-modal-electrolytes-peach.webp" },
+  pear:  { id: "electrolytes-pear",  title: "OMNI Electrolytes Pear",  image: "/assets/omni-modal-electrolytes-pear.png" },
+};
+
+function getOrderTier(orderCount) {
+  if (orderCount >= 5) return "high";
+  if (orderCount >= 4) return "mid";
+  return "low";
+}
+
+function getOfferBanner(pouchCount, orderCount) {
+  const tier = getOrderTier(orderCount);
+  return OFFER_BANNER_MAP[`${pouchCount}-${tier}`] || OFFER_BANNER_MAP["3-low"];
+}
+
+// ─── Analytics helpers ───────────────────────────────────────────────────────
 function trackCancellationEvent(eventName, payload = {}) {
   const detail = { event: eventName, ...payload, timestamp: new Date().toISOString() };
   window.dispatchEvent(new CustomEvent("omni:cancellation", { detail }));
@@ -13,10 +49,11 @@ function trackCancellationEvent(eventName, payload = {}) {
 
 function getActionEventName(action) {
   const label = action.label.toLowerCase();
-  if (action.action === "support" || label.includes("support")) return "support_clicked";
+  if (action.action === "support" || action.action === "founder-support" || label.includes("support") || label.includes("founder")) return "support_clicked";
   if (action.branch === "pause" || label.includes("pause")) return "pause_clicked";
   if (action.branch === "skip" || label.includes("skip")) return "skip_clicked";
   if (action.branch === "cadence" || label.includes("week") || label.includes("delivery")) return "cadence_change_clicked";
+  if (action.branch === "product-swap") return "product_swap_clicked";
   return "save_action_clicked";
 }
 
@@ -26,6 +63,8 @@ function supportUrlWithContext(context) {
   return url.toString();
 }
 
+// ─── Cancellation reason config ──────────────────────────────────────────────
+// Central config for all reasons. Edit labels, CTAs, and cards here.
 const reasonConfig = [
   {
     id: "no-results",
@@ -35,6 +74,13 @@ const reasonConfig = [
     headline: "Give your routine enough time to work",
     body: "Most members judge results too early. Creatine works best when dose, timing, and consistency line up for several weeks.",
     subReasons: ["Less than 4 weeks", "Taking inconsistently", "Not sure about dose", "Expected faster change"],
+    // Recommended action changes dynamically based on selected sub-reason
+    subReasonCtaMap: {
+      "Less than 4 weeks":      { label: "Skip this order and keep going", branch: "skip" },
+      "Taking inconsistently":  { label: "Build my consistency plan", branch: "plan" },
+      "Not sure about dose":    { label: "Contact support about dosing", action: "support" },
+      "Expected faster change": { label: "Learn how creatine works", branch: "education" },
+    },
     cards: ["4 to 12 week consistency window", "Daily serving matters", "Timing should fit your routine"],
     ctas: [
       { label: "Build my consistency plan", branch: "plan" },
@@ -79,10 +125,9 @@ const reasonConfig = [
     headline: "You do not need to cancel to slow things down",
     body: "If you have enough product, keep member access and move the next order out.",
     subReasons: ["One extra pouch", "Multiple pouches left", "Using it slower", "Travel or schedule change"],
-    cards: ["Unopened pouches keep well sealed", "Skip once without cancelling", "Move cadence to 8 or 12 weeks"],
+    cards: ["Unopened pouches keep well sealed", "Skip once without cancelling", "Move cadence to 12 weeks"],
     ctas: [
       { label: "Skip next order", branch: "skip" },
-      { label: "Move to 8 weeks", branch: "cadence", preselect: "Every 8 weeks" },
       { label: "Move to 12 weeks", branch: "cadence", preselect: "Every 12 weeks" },
       { label: "Pause subscription", branch: "pause" },
     ],
@@ -92,15 +137,14 @@ const reasonConfig = [
     title: "Too expensive to continue",
     helper: "Review a stronger member offer before cancelling.",
     treatment: "savings",
-    headline: "Lower the next orders before giving up member pricing",
-    body: "Keep portal control, member pricing, and your routine while reducing the next few orders.",
+    headline: "Keep your routine with less cost",
+    body: "Keep portal control and member pricing while reducing the next few orders.",
     subReasons: ["Monthly cost", "Shipping cost", "Budget changed", "Want fewer orders"],
-    offer: "50% off next 3 orders",
-    cards: ["Best if you still want OMNI", "Keeps member pricing active", "Can pair with a skipped order"],
+    useOfferMode: true,
     ctas: [
-      { label: "Apply 50% off next 3 orders", branch: "savings", preselect: "50% off next 3 orders" },
-      { label: "Skip and keep offer", branch: "savings", preselect: "Skip next order and keep offer" },
-      { label: "Move to 8 weeks", branch: "cadence", preselect: "Every 8 weeks" },
+      { label: "Get 50% off next 3 orders", branch: "savings", preselect: "50% off next 3 orders" },
+      { label: "Skip and get 50% off", branch: "savings", preselect: "Skip next order and keep offer" },
+      { label: "Move to 12 weeks and get 50% off", branch: "cadence", preselect: "Every 12 weeks" },
     ],
   },
   {
@@ -111,11 +155,10 @@ const reasonConfig = [
     headline: "Keep control without losing the better price",
     body: "The subscription only keeps your member pricing active. You can skip, pause, or slow deliveries whenever you need.",
     subReasons: ["Only wanted one order", "Prefer manual orders", "Subscription anxiety", "Need more control"],
-    cards: ["Skip anytime", "Pause anytime", "Change delivery date", "Cancel from portal"],
+    cards: ["Skip anytime", "Pause anytime", "Change delivery date"],
     ctas: [
-      { label: "Skip next order", branch: "skip" },
+      { label: "Move to 12 weeks", branch: "cadence", preselect: "Every 12 weeks" },
       { label: "Pause subscription", branch: "pause" },
-      { label: "Move to 8 weeks", branch: "cadence", preselect: "Every 8 weeks" },
     ],
   },
   {
@@ -127,17 +170,17 @@ const reasonConfig = [
     body: "If the format is the issue, switching product type can solve the experience without losing your routine.",
     subReasons: ["Too chewy", "Flavor too strong", "Aftertaste", "Prefer drink format"],
     imageKey: "product-swap",
-    cards: ["Switch to electrolyte stick packs", "Try Peach gummies", "Try Watermelon gummies", "Build a product plan"],
+    cards: ["Switch to a sugar-free electrolyte format", "Try a different gummy flavor"],
     ctas: [
-      { label: "Swap product", branch: "product" },
-      { label: "Get my product plan", branch: "plan" },
+      { label: "Swap to electrolytes", branch: "product-swap" },
+      { label: "Change the Flavor", branch: "flavor" },
     ],
     plan: {
-      title: "Your product plan",
-      body: "Move toward the product direction that fits your taste and routine.",
-      options: ["Electrolyte stick packs", "Peach gummies", "Watermelon gummies"],
-      cta: "Save product plan",
-      saved: "Your product plan was saved.",
+      title: "Change your flavor",
+      body: "Choose the flavor direction for your next delivery.",
+      options: ["Peach gummies", "Watermelon gummies"],
+      cta: "Save flavor preference",
+      saved: "Your flavor preference was saved.",
     },
   },
   {
@@ -151,7 +194,7 @@ const reasonConfig = [
     imageKey: "electrolytes",
     cards: ["Zero sugar format", "Added hydration support", "Keeps the daily routine"],
     ctas: [
-      { label: "Switch to stick packs", branch: "product", preselect: "Electrolyte stick packs" },
+      { label: "Switch to sugar free electrolytes", branch: "product", preselect: "Electrolyte stick packs" },
       { label: "Skip next order", branch: "skip" },
       { label: "Contact support", action: "support" },
     ],
@@ -168,7 +211,7 @@ const reasonConfig = [
     cards: ["Take with food", "Start with fewer gummies", "Switch to stick packs"],
     ctas: [
       { label: "Build gentler routine", branch: "plan" },
-      { label: "Switch product", branch: "product", preselect: "Electrolyte stick packs" },
+      { label: "Switch to electrolytes instead", branch: "product", preselect: "Electrolyte stick packs" },
       { label: "Contact support", action: "support" },
     ],
     plan: {
@@ -216,30 +259,22 @@ const reasonConfig = [
     title: "There's an issue with my gummies",
     helper: "Share details so support can resolve it.",
     treatment: "issue",
-    headline: "Let support fix the product issue",
+    headline: "Let support fix the issue",
     body: "Choose what you are seeing so the team can route it correctly.",
-    issueFields: true,
-    issueOptions: ["Melted or sticky gummies", "Damaged pouch or packaging", "Wrong flavor or item", "Missing item in the order", "Taste, smell, or texture seems off", "Other product issue"],
+    // issueOptions shown as chips; selecting one adds context to the support request
+    issueOptions: [
+      "Melted or sticky gummies",
+      "Wrong flavor or item",
+      "Missing item in the order",
+      "Taste, smell, or texture seems off",
+      "Packaging arrived damaged",
+      "Other product issue",
+    ],
     ctas: [
-      { label: "Contact support about this issue", action: "support", requiresDetail: true },
+      { label: "Contact support", action: "support" },
       { label: "Pause subscription", branch: "pause" },
     ],
     supportContext: "Customer selected product issue during cancellation flow.",
-  },
-  {
-    id: "packaging-issue",
-    title: "Packaging issue with my order",
-    helper: "Tell us what happened so support can fix it.",
-    treatment: "issue",
-    headline: "Let support fix the packaging issue",
-    body: "Choose what happened so support can route this correctly.",
-    issueFields: true,
-    issueOptions: ["Pouch arrived damaged", "Seal was open", "Box was damaged", "Items were missing", "Label or address issue", "Other packaging issue"],
-    ctas: [
-      { label: "Contact support about packaging", action: "support", requiresDetail: true },
-      { label: "Pause subscription", branch: "pause" },
-    ],
-    supportContext: "Customer selected packaging issue during cancellation flow.",
   },
   {
     id: "alternative",
@@ -249,19 +284,12 @@ const reasonConfig = [
     headline: "Check the difference before you switch",
     body: "OMNI is built for daily consistency, convenience, and tested quality. Compare the basics before you leave.",
     subReasons: ["Different brand", "Different format", "Friend recommended another", "Comparing value"],
-    cards: ["Third party quality testing", "Daily format made for consistency", "Portal control for timing and skips"],
+    useOfferMode: true,
     ctas: [
-      { label: "See why members stay", branch: "education" },
-      { label: "Get my personalized plan", branch: "plan" },
-      { label: "Apply member savings", branch: "savings", preselect: "50% off next 3 orders" },
+      { label: "See why OMNI is superior to other supplements", branch: "education", url: SCIENCE_PAGE_URL },
+      { label: "Talk to Founder about it", action: "founder-support" },
+      { label: "Get 50% off next 3 orders", branch: "savings", preselect: "50% off next 3 orders" },
     ],
-    plan: {
-      title: "Your better setup",
-      body: "Keep OMNI only where it fits your current routine.",
-      options: ["Move to 8 weeks", "Add electrolyte sticks", "Keep member pricing active"],
-      cta: "Save better setup",
-      saved: "Your better setup was saved.",
-    },
   },
   {
     id: "editing",
@@ -298,6 +326,7 @@ const reasonConfig = [
   },
 ];
 
+// ─── Branch config ─────────────────────────────────────────────────────────
 const branchConfig = {
   cadence: {
     title: "Update delivery frequency",
@@ -316,7 +345,7 @@ const branchConfig = {
   pause: {
     title: "Pause and keep your member setup",
     body: "Take a break without closing the subscription.",
-    options: ["Pause 2 weeks", "Pause 4 weeks", "Pause 8 weeks", "Custom restart date"],
+    options: ["Pause 4 weeks", "Pause 8 weeks", "Pause 12 weeks"],
     note: "Your subscription stays active, and orders resume after the pause ends.",
     cta: "Pause subscription",
     saved: "Your pause was saved.",
@@ -324,7 +353,7 @@ const branchConfig = {
   savings: {
     title: "Lock in the member savings",
     body: "Choose how you want the offer applied.",
-    options: ["50% off next 3 orders", "Skip next order and keep offer", "Keep current plan"],
+    options: ["50% off next 3 orders", "Skip next order and keep offer"],
     cta: "Apply savings",
     saved: "Your savings were applied.",
   },
@@ -337,10 +366,17 @@ const branchConfig = {
   },
   education: {
     title: "Why members stay",
-    body: "This placeholder is ready for deeper website-style content.",
+    body: "Third-party tested quality, daily creatine gummies, and full portal control.",
     options: ["Quality testing", "How to take OMNI", "Routine tips"],
     cta: "Save and keep subscription",
     saved: "Your member setup was kept active.",
+  },
+  flavor: {
+    title: "Change your gummy flavor",
+    body: "Choose the flavor direction for your next delivery.",
+    options: ["Peach gummies", "Watermelon gummies"],
+    cta: "Save flavor",
+    saved: "Your flavor preference was saved.",
   },
 };
 
@@ -349,12 +385,14 @@ function getBranchConfig(branch, reason) {
   return branchConfig[branch] || branchConfig.skip;
 }
 
+// ─── Product visual (flavor/texture and sugar reasons) ───────────────────────
 function ProductVisual({ imageKey }) {
   if (!imageKey) return null;
   const productTitle = imageKey === "electrolytes" ? "Electrolyte stick packs" : "Better product fit";
-  const productCopy = imageKey === "electrolytes"
-    ? "A sugar free stick pack direction for customers who want creatine with added hydration support."
-    : "A cleaner product fit area for swapping format or flavor without ending the subscription.";
+  const productCopy =
+    imageKey === "electrolytes"
+      ? "A sugar free stick pack format with creatine and hydration support."
+      : "Switch format or flavor without ending your subscription.";
 
   return (
     <article className={`cancel-product-visual cancel-product-visual-${imageKey}`}>
@@ -368,6 +406,19 @@ function ProductVisual({ imageKey }) {
   );
 }
 
+// ─── Modal header ─────────────────────────────────────────────────────────────
+function CancellationModalHeader({ onClose }) {
+  return (
+    <div className="cancel-modal-header">
+      <div className="cancel-modal-logo" aria-label="OMNI">
+        <img src="/assets/omni-logo-white.svg" alt="OMNI" />
+      </div>
+      <button className="cancel-flow-close" type="button" onClick={onClose} aria-label="Close cancellation flow">×</button>
+    </div>
+  );
+}
+
+// ─── Step 1: Reason select ───────────────────────────────────────────────────
 function CancellationReasonSelect({ selectedReasonId, onSelect, onContinue, onClose }) {
   return (
     <div className="cancel-step">
@@ -395,21 +446,68 @@ function CancellationReasonSelect({ selectedReasonId, onSelect, onContinue, onCl
       </div>
 
       <div className="cancel-flow-actions">
-        <Button variant="outline" onClick={onClose}>Back</Button>
-        <Button variant="primary" onClick={onContinue} disabled={!selectedReasonId}>Continue</Button>
+        <Button variant="primary" onClick={onClose}>Back</Button>
+        <Button variant="outline" onClick={onContinue} disabled={!selectedReasonId}>Continue</Button>
       </div>
     </div>
   );
 }
 
+// ─── Swap drawer (electrolytes product swap) ─────────────────────────────────
+function SwapDrawer({ onConfirm, onClose }) {
+  const [selectedFlavor, setSelectedFlavor] = useState("peach");
+  const flavors = Object.entries(PRODUCT_SWAP_MAP);
+  const selectedProduct = PRODUCT_SWAP_MAP[selectedFlavor];
+
+  return (
+    <div className="cancel-step">
+      <div className="cancel-step-back-row">
+        <button type="button" className="cancel-back-link" onClick={onClose}>Close</button>
+      </div>
+      <div className="cancel-step-head">
+        <h2>Change To Electrolytes</h2>
+        <p>Choose Electrolytes Flavor</p>
+      </div>
+      <div className="cancel-swap-flavor-grid">
+        {flavors.map(([key, opt]) => (
+          <button
+            key={key}
+            type="button"
+            className={`cancel-swap-flavor-option ${selectedFlavor === key ? "selected" : ""}`}
+            onClick={() => setSelectedFlavor(key)}
+          >
+            <img src={opt.image} alt={opt.title} />
+            <span>{opt.title}</span>
+          </button>
+        ))}
+      </div>
+      <div className="cancel-flow-actions cancel-flow-actions-sticky">
+        <Button variant="outline" onClick={onClose}>Close</Button>
+        <Button variant="primary" onClick={() => onConfirm(selectedProduct)}>Confirm swap</Button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Step 2: Save page (reason-specific treatment) ──────────────────────────
 function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
   const [selectedSubReason, setSelectedSubReason] = useState("");
   const [note, setNote] = useState("");
-  const isIssueFlow = Boolean(reason.issueFields);
+  const isIssueFlow = Boolean(reason.issueOptions?.length);
   const diagnosticOptions = reason.issueOptions || reason.subReasons || [];
-  const needsDiagnosticAnswer = diagnosticOptions.length > 0;
-  const engineLabel = isIssueFlow ? "Support option" : "Recommended option";
+  const needsDiagnosticAnswer = diagnosticOptions.length > 0 && !isIssueFlow;
+  // Issue flow CTAs always enabled (no required field selection)
   const canContinue = !needsDiagnosticAnswer || Boolean(selectedSubReason);
+
+  // Dynamic recommended CTA for "no-results" based on selected sub-reason
+  const activeCtas = useMemo(() => {
+    if (reason.subReasonCtaMap && selectedSubReason && reason.subReasonCtaMap[selectedSubReason]) {
+      const dynamic = reason.subReasonCtaMap[selectedSubReason];
+      const secondary = reason.ctas.find((c) => c.label !== dynamic.label);
+      return secondary ? [dynamic, secondary] : [dynamic];
+    }
+    return reason.ctas;
+  }, [reason, selectedSubReason]);
 
   const handleAction = (action) => {
     if (!canContinue) return;
@@ -421,6 +519,36 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
     onCancel();
   };
 
+  // ── Offer mode (expensive, alternative) ─────────────────────────────────
+  if (reason.useOfferMode) {
+    const bannerUrl = getOfferBanner(subscription.pouchCount || 3, subscription.orderCount || 2);
+    return (
+      <div className="cancel-step cancel-save-step">
+        <h2>{reason.headline}</h2>
+        <p>{reason.body}</p>
+        <div className="cancel-offer-banner">
+          <img src={bannerUrl} alt="Member offer" />
+        </div>
+        <div className="cancel-offer-cta-stack">
+          {reason.ctas.map((action, index) => (
+            <button
+              key={`${reason.id}-${action.label}`}
+              type="button"
+              className={index === 0 ? "cancel-save-primary" : "cancel-save-secondary"}
+              onClick={() => handleAction(action)}
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+        <button type="button" className="cancel-text-link" onClick={handleCancel}>
+          {FINAL_STEP_LABEL}
+        </button>
+      </div>
+    );
+  }
+
+  // ── Action mode ──────────────────────────────────────────────────────────
   return (
     <div className="cancel-step cancel-save-step">
       <h2>{reason.headline}</h2>
@@ -428,12 +556,10 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
 
       <ProductVisual imageKey={reason.imageKey} />
 
-      {reason.offer && <p className="cancel-offer-note">{reason.offer}</p>}
-
       {diagnosticOptions.length > 0 && (
         <div className="cancel-diagnostic-block">
           <span className="cancel-kicker">{isIssueFlow ? "Choose issue type" : "What best describes it?"}</span>
-          <div className="cancel-issue-type-grid" aria-label={isIssueFlow ? "Issue type" : "Cancellation sub reason"}>
+          <div className="cancel-issue-type-grid" aria-label={isIssueFlow ? "Issue type" : "Sub-reason"}>
             {diagnosticOptions.map((option) => (
               <button
                 key={option}
@@ -448,24 +574,6 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
         </div>
       )}
 
-      {isIssueFlow && selectedSubReason && (
-        <div className="cancel-issue-fields" aria-label="Product issue details">
-          <span className="cancel-kicker">Details for support</span>
-          <label>
-            Photo of the gummies
-            <input type="file" />
-          </label>
-          <label>
-            Lot number from the back of the sachet
-            <input type="text" placeholder="Lot number" />
-          </label>
-          <label>
-            Short description of the issue
-            <textarea rows="3" placeholder={`Tell us about: ${selectedSubReason}`} onChange={(event) => setNote(event.target.value)} />
-          </label>
-        </div>
-      )}
-
       {reason.noteField && (
         <label className="cancel-note-field">
           Short note
@@ -473,16 +581,12 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
         </label>
       )}
 
-      <div className={`cancel-save-card cancel-treatment-${reason.treatment} cancel-cta-count-${reason.ctas.length}`}>
-        <div className="cancel-save-card-head">
-          <div>
-            <span className="cancel-kicker">{engineLabel}</span>
-            <h3>{reason.ctas[0].label}</h3>
-          </div>
-          {selectedSubReason && !isIssueFlow && <p className="cancel-selected-choice">Selected: {selectedSubReason}</p>}
-        </div>
+      <div className={`cancel-save-card cancel-treatment-${reason.treatment}`}>
         {needsDiagnosticAnswer && !selectedSubReason && (
           <p className="cancel-unlock-note">Choose one option above to unlock these actions.</p>
+        )}
+        {selectedSubReason && !isIssueFlow && (
+          <p className="cancel-selected-choice">Selected: {selectedSubReason}</p>
         )}
         {reason.cards?.length > 0 && (
           <div className="cancel-insight-grid">
@@ -495,7 +599,7 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
           </div>
         )}
         <div className="cancel-save-grid">
-          {reason.ctas.map((action, index) => (
+          {activeCtas.map((action, index) => (
             <button
               key={`${reason.id}-${action.label}`}
               type="button"
@@ -509,18 +613,14 @@ function CancellationSavePage({ reason, onBack, onAction, onCancel }) {
         </div>
       </div>
 
-      <button
-        type="button"
-        className="cancel-text-link"
-        onClick={handleCancel}
-        disabled={!canContinue}
-      >
+      <button type="button" className="cancel-text-link" onClick={handleCancel} disabled={!canContinue}>
         {FINAL_STEP_LABEL}
       </button>
     </div>
   );
 }
 
+// ─── Step 3: Branch screen (cadence, skip, pause, savings, product, etc.) ───
 function CancellationBranchScreen({ branch, reason, preselect, onBack, onDone, onCancel }) {
   const config = getBranchConfig(branch, reason);
   const [choice, setChoice] = useState(preselect || config.options[0] || "");
@@ -556,221 +656,101 @@ function CancellationBranchScreen({ branch, reason, preselect, onBack, onDone, o
       {config.note && <p className="cancel-offer-note">{config.note}</p>}
 
       <div className="cancel-flow-actions cancel-flow-actions-sticky">
-        <Button variant="primary" onClick={() => onDone(config.saved, choice)}>{choice ? `${config.cta}: ${choice}` : config.cta}</Button>
+        <Button variant="primary" onClick={() => onDone(config.saved, choice)}>
+          {choice ? `${config.cta}: ${choice}` : config.cta}
+        </Button>
         <button type="button" className="cancel-text-link" onClick={onCancel}>{FINAL_STEP_LABEL}</button>
       </div>
     </div>
   );
 }
 
-function getRescueConfig(reason) {
-  const productIssueIds = ["product-issue", "packaging-issue"];
-  const overstockIds = ["stocked", "fast"];
-  const priceIds = ["expensive"];
-  const tasteIds = ["flavor-texture", "sugar", "digestion"];
-  const noNeedIds = ["no-longer-need", "trial-only", "habit", "no-results", "alternative", "editing", "other"];
-
-  if (productIssueIds.includes(reason.id)) {
-    return {
-      eyebrow: "Support first",
-      title: "Route this to support before canceling",
-      body: "Most product issues get routed faster when support knows what happened. Send the issue to support, pause the next order, then decide.",
-      trust: "Support reviews product issues before you make a final decision.",
-      actions: [
-        { label: "Contact support", action: "support" },
-        { label: "Pause subscription", branch: "pause" },
-      ],
-    };
-  }
-
-  if (overstockIds.includes(reason.id)) {
-    return {
-      eyebrow: "Adjust the pace",
-      title: "Stretch deliveries instead of stopping completely",
-      body: "Creatine works best with consistency, but your delivery schedule should match your pace. Move the cadence out and avoid overstock.",
-      trust: "Changing cadence avoids overstock without losing your routine.",
-      actions: [
-        { label: "Switch to 12 week delivery", branch: "cadence", preselect: "Every 12 weeks" },
-        { label: "Skip next order", branch: "skip" },
-      ],
-    };
-  }
-
-  if (priceIds.includes(reason.id)) {
-    return {
-      eyebrow: "Reduce commitment",
-      title: "Pause your next order and keep control",
-      body: "Keep the account open without taking another delivery right now. Pause or skip while timing and budget reset.",
-      trust: "Pausing keeps your account open without another delivery.",
-      actions: [
-        { label: "Pause subscription", branch: "pause" },
-        { label: "Skip next order", branch: "skip" },
-      ],
-    };
-  }
-
-  if (tasteIds.includes(reason.id)) {
-    return {
-      eyebrow: "Better fit option",
-      title: "Fix the fit first, then decide",
-      body: "Flavor and format issues are fixable. Route the fit issue to support or pause the next delivery while you choose the better direction.",
-      trust: "Your subscription stays fully in your control.",
-      actions: [
-        { label: "Contact support", action: "support" },
-        { label: "Pause subscription", branch: "pause" },
-      ],
-    };
-  }
-
-  if (noNeedIds.includes(reason.id)) {
-    return {
-      eyebrow: "Keep control",
-      title: "Keep the door open without another delivery",
-      body: "Pause the account instead of closing it. Your subscription stays inactive until you are ready again.",
-      trust: "Pausing keeps your account open without another delivery.",
-      actions: [
-        { label: "Pause subscription", branch: "pause" },
-        { label: "Skip next order", branch: "skip" },
-      ],
-    };
-  }
-
-  return {
-    eyebrow: "One more option",
-    title: "Fix the issue first, then decide",
-    body: "Choose the fastest option below and we will adjust your subscription around what you actually need.",
-    trust: "Your subscription stays fully in your control.",
-    actions: [
-      { label: "Pause subscription", branch: "pause" },
-      { label: "Skip next order", branch: "skip" },
-    ],
-  };
-}
-
-function getRescueActionCopy(action, rescue) {
-  const label = action.label.toLowerCase();
-  if (label.includes("support")) return "Send this to support so the team can help before you decide.";
-  if (label.includes("pause")) return "Pause deliveries and keep your account open until you are ready.";
-  if (label.includes("skip")) return "Skip the next shipment while keeping the subscription active.";
-  if (label.includes("12 week")) return "Stretch future deliveries so your next order matches your pace.";
-  if (label.includes("8 week")) return "Slow the cadence while keeping your member setup active.";
-  if (label.includes("savings") || label.includes("offer")) return "Keep your member setup while making the next orders easier.";
-  if (label.includes("product") || label.includes("stick")) return "Switch the product direction without closing your subscription.";
-  return rescue.trust || "Keep control of your subscription without closing the account.";
-}
-
-function CancellationModalHeader({ onClose }) {
-  return (
-    <div className="cancel-modal-header">
-      <div className="cancel-modal-logo" aria-label="OMNI">
-        <img src="/assets/omni-logo-dark.svg" alt="OMNI" />
-      </div>
-      <button className="cancel-flow-close" type="button" onClick={onClose} aria-label="Close cancellation flow">×</button>
-    </div>
-  );
-}
-
+// ─── Step 4: Rescue page — premium redesign ──────────────────────────────────
+// Always shows offer banner for ALL cancellation reasons with premium layout
 function CancellationRescuePage({ reason, onBack, onAction, onContinue }) {
-  const rescue = getRescueConfig(reason);
-  const [recommendedAction, ...secondaryActions] = rescue.actions;
-  const actionCards = [
-    { ...recommendedAction, emphasis: "recommended" },
-    ...secondaryActions.map((action) => ({ ...action, emphasis: "optional" })),
-  ];
+  const bannerUrl = getOfferBanner(subscription.pouchCount || 3, subscription.orderCount || 2);
+  const offerAction = { label: "Claim this offer", branch: "savings", preselect: "50% off next 3 orders" };
+  const pauseAction = { label: "Pause subscription", branch: "pause" };
 
   return (
     <div className="cancel-step cancel-rescue-step">
       <div className="cancel-step-back-row">
-        <button type="button" className="cancel-back-link" onClick={onBack}>Back to options</button>
-      </div>
-      <div className="cancel-step-head cancel-stacked-head">
-        <span className="cancel-kicker">Account options</span>
-        <h2>Choose what you’d like to do next</h2>
-        <p>Here’s the option that best matches what you selected.</p>
+        <button type="button" className="cancel-back-link" onClick={onBack}>← Back</button>
       </div>
 
-      <article className={`cancel-rescue-card cancel-treatment-${reason.treatment}`}>
-        <span className="cancel-kicker">{rescue.eyebrow}</span>
-        <h3>{rescue.title}</h3>
-        <p>{rescue.body}</p>
-
-        <div className="cancel-rescue-action-grid">
-          {actionCards.map((action) => (
-            <article
-              className={`cancel-action-card cancel-action-card-${action.emphasis}`}
-              key={`${reason.id}-rescue-${action.label}`}
-            >
-              <span className="cancel-action-pill">
-                {action.emphasis === "recommended" ? "Recommended" : "Optional"}
-              </span>
-              <strong>{action.label}</strong>
-              <p>{getRescueActionCopy(action, rescue)}</p>
-              <button
-                type="button"
-                className={action.emphasis === "recommended" ? "cancel-save-primary" : "cancel-save-secondary"}
-                onClick={() => onAction(action)}
-              >
-                {action.label}
-              </button>
-            </article>
-          ))}
+      <div className="cancel-rescue-premium">
+        <div className="cancel-rescue-headline">
+          <span className="cancel-rescue-eyebrow">Member exclusive</span>
+          <h2>One offer before you go</h2>
+          <p className="cancel-rescue-subtext">Reserved for active subscribers only. Once you cancel, this offer is gone.</p>
         </div>
-      </article>
+
+        <div className="cancel-rescue-img-wrap">
+          <img src={bannerUrl} alt="Member exclusive offer — 50% off next 3 orders" className="cancel-rescue-offer-img" />
+        </div>
+
+        <div className="cancel-rescue-cta-block">
+          <button
+            type="button"
+            className="cancel-rescue-primary-btn"
+            onClick={() => onAction(offerAction)}
+          >
+            Claim this offer
+          </button>
+          <button
+            type="button"
+            className="cancel-rescue-secondary-btn"
+            onClick={() => onAction(pauseAction)}
+          >
+            Pause my subscription instead
+          </button>
+        </div>
+      </div>
 
       <div className="cancel-rescue-footer cancel-rescue-footer-single">
-        <button type="button" className="cancel-text-link" onClick={onContinue}>Continue to final cancellation</button>
+        <button type="button" className="cancel-text-link" onClick={onContinue}>No thanks — continue to cancellation</button>
       </div>
     </div>
   );
 }
 
+// ─── Step 5: Final confirmation ──────────────────────────────────────────────
 function getFinalConfirmConfig(reason) {
-  const productIssueIds = ["product-issue", "packaging-issue", "flavor-texture", "sugar", "digestion"];
-  const overstockIds = ["stocked", "fast"];
-  const priceIds = ["expensive"];
-  const alternativeIds = ["alternative"];
-  const noLongerUsingIds = ["no-longer-need", "trial-only"];
-
-  if (productIssueIds.includes(reason.id)) {
+  if (["product-issue", "flavor-texture", "sugar", "digestion"].includes(reason.id)) {
     return {
       pill: "Product issue",
       title: "You can still let support review this first.",
       body: "If you continue, your subscription will be cancelled. If you want the team to review the issue before you decide, go back to the fix options.",
     };
   }
-
-  if (overstockIds.includes(reason.id)) {
+  if (["stocked", "fast"].includes(reason.id)) {
     return {
       pill: "Too much product",
       title: "You can still slow deliveries instead of cancelling.",
       body: "If you continue, your subscription will be cancelled. If timing is the issue, go back to switch cadence or skip your next order.",
     };
   }
-
-  if (priceIds.includes(reason.id)) {
+  if (reason.id === "expensive") {
     return {
       pill: "Price concern",
-      title: "You can still pause instead of cancelling.",
-      body: "If you continue, your subscription will be cancelled. If now is not the right time, go back to pause or skip your next order.",
+      title: "You can still pause or take the offer instead of cancelling.",
+      body: "If you continue, your subscription will be cancelled. If now is not the right time, go back to pause or apply the member offer.",
     };
   }
-
-  if (alternativeIds.includes(reason.id)) {
+  if (reason.id === "alternative") {
     return {
       pill: "Considering another product",
       title: "You can still keep your OMNI subscription active.",
       body: "If you continue, your subscription will be cancelled. If you want to compare options first, go back to the fix options.",
     };
   }
-
-  if (noLongerUsingIds.includes(reason.id)) {
+  if (["no-longer-need", "trial-only"].includes(reason.id)) {
     return {
       pill: "Not using it right now",
       title: "You can still keep control without another delivery.",
       body: "If you continue, your subscription will be cancelled. If you may come back later, go back to pause instead.",
     };
   }
-
   return {
     pill: "Other reason",
     title: "You can still choose a lighter option.",
@@ -789,7 +769,7 @@ function CancellationFinalConfirm({ reason, onBack, onConfirm }) {
         </div>
         <div className="cancel-step-head cancel-stacked-head">
           <span className="cancel-kicker">Final choice</span>
-          <h2>Choose how you’d like to finish</h2>
+          <h2>Choose how you'd like to finish</h2>
           <p className="cancel-final-subcopy">Your subscription can be cancelled now, or you can adjust the next order instead.</p>
         </div>
 
@@ -808,6 +788,7 @@ function CancellationFinalConfirm({ reason, onBack, onConfirm }) {
   );
 }
 
+// ─── Saved / cancelled screens ───────────────────────────────────────────────
 function CancellationSavedScreen({ message, onDone }) {
   return (
     <div className="cancel-step cancel-complete-step cancel-complete-step-saved">
@@ -824,12 +805,13 @@ function CancellationCompleteScreen({ onDone }) {
     <div className="cancel-step cancel-complete-step cancel-complete-step-cancelled">
       <span className="cancel-kicker">Cancelled</span>
       <h2>Your subscription has been cancelled.</h2>
-      <p>You’ll still have access to your account if you want to restart later.</p>
+      <p>You'll still have access to your account if you want to restart later.</p>
       <Button variant="primary" onClick={onDone}>Done</Button>
     </div>
   );
 }
 
+// ─── Main cancellation flow ──────────────────────────────────────────────────
 export default function CancellationFlow({ open, onClose, onKept, onSupportStarted }) {
   const [selectedReasonId, setSelectedReasonId] = useState("");
   const [step, setStep] = useState("reason");
@@ -837,6 +819,7 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
   const [branchPreselect, setBranchPreselect] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
   const selectedReason = useMemo(
     () => reasonConfig.find((reason) => reason.id === selectedReasonId),
     [selectedReasonId]
@@ -883,15 +866,31 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
       subReason: context.selectedSubReason,
     });
 
-    if (action.action === "support") {
+    // Support / founder-support: open external URL
+    if (action.action === "support" || action.action === "founder-support") {
+      const baseUrl = action.action === "founder-support" ? FOUNDER_SUPPORT_URL : SUPPORT_URL;
       const supportContext = [
         selectedReason?.supportContext || `Customer selected ${selectedReason?.title} during cancellation flow.`,
-        context.selectedSubReason ? `Sub reason: ${context.selectedSubReason}.` : "",
+        context.selectedSubReason ? `Issue type: ${context.selectedSubReason}.` : "",
         context.note ? `Note: ${context.note}` : "",
       ].filter(Boolean).join(" ");
-      window.open(supportUrlWithContext(supportContext), "_blank", "noopener,noreferrer");
+      const url = new URL(baseUrl);
+      url.searchParams.set("context", supportContext);
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
       closeFlow({ skipAbandonedEvent: true });
       onSupportStarted?.("Support request started.");
+      return;
+    }
+
+    // Actions with a direct URL (e.g. science page)
+    if (action.url) {
+      window.open(action.url, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    // Product swap (electrolytes drawer)
+    if (action.branch === "product-swap") {
+      setStep("product-swap");
       return;
     }
 
@@ -906,6 +905,10 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
     setSavedMessage(finalMessage);
     setStep("saved");
     trackCancellationEvent("save_completed", { reasonId: selectedReason?.id, branch, choice, message: finalMessage });
+  };
+
+  const handleSwapConfirmed = (product) => {
+    handleSaved(`Your subscription is being swapped to ${product.title}.`, product.id);
   };
 
   const reviewFinalStep = () => {
@@ -946,6 +949,12 @@ export default function CancellationFlow({ open, onClose, onKept, onSupportStart
             onBack={() => setStep("reason")}
             onAction={handleAction}
             onCancel={reviewFinalStep}
+          />
+        )}
+        {!submitted && !savedMessage && step === "product-swap" && selectedReason && (
+          <SwapDrawer
+            onConfirm={handleSwapConfirmed}
+            onClose={() => setStep("save")}
           />
         )}
         {!submitted && !savedMessage && step === "branch" && selectedReason && (
